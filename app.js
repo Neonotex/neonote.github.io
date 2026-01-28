@@ -1,11 +1,29 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.onclick = () => {
+    document.querySelectorAll('.tab').forEach(t =>
+      t.classList.remove('active')
+    );
+
+    tab.classList.add('active');
+    currentTab = tab.dataset.tab;
+    render();
+  };
+});
+
 const todayContainer = document.getElementById('todayContainer');
 const modal = document.getElementById('promiseModal');
 const addBtn = document.getElementById('addBtn');
 const saveBtn = document.getElementById('savePromise');
 const closeModal = document.getElementById('closeModal');
 const searchInput = document.getElementById('searchInput');
+const clearSearchBtn = document.getElementById('clearSearch');
+const homeBtn = document.getElementById('homeBtn');
+
+let searchClearTimer = null;
+let currentTab = 'today';
+
 const clientName = document.getElementById('clientName');
 const promiseDate = document.getElementById('promiseDate');
 const description = document.getElementById('description');
@@ -20,24 +38,29 @@ function today() {
   return new Date().toISOString().split('T')[0];
 }
 
-function render(list = promises, mode = 'today') {
+function render(list = promises, mode = currentTab) {
   todayContainer.innerHTML = '';
 
-  let items = list;
+  let items = [];
 
   if (mode === 'today') {
     items = list.filter(p => p.date === today() && !p.done);
   }
 
+  if (mode === 'all') {
+    items = list.filter(p => !p.done);
+  }
+
+  if (mode === 'done') {
+    items = list.filter(p => p.done);
+  }
+
   if (!items.length) {
-    todayContainer.innerHTML =
-      mode === 'today'
-        ? '<p>Wala kay promise karon Dong! Pag trabaho intawon</p>'
-        : '<p>Wala pana promise Dong! Trabahoa sa!</p>';
+    todayContainer.innerHTML = '<p>Wala kay promise karon Dong! Pag trabaho intawon!</p>';
     return;
   }
 
-  items.forEach((p, i) => {
+  items.forEach(p => {
     const div = document.createElement('div');
     div.className = 'promise';
     if (p.done) div.classList.add('done-visible');
@@ -55,7 +78,7 @@ function render(list = promises, mode = 'today') {
         <p>Date: ${p.date}</p>
         <p>${p.desc}</p>
         ${
-          !p.done
+          !p.done && mode !== 'done'
             ? '<button class="move">Move Promise</button>'
             : ''
         }
@@ -82,13 +105,13 @@ function render(list = promises, mode = 'today') {
         editIndex = promises.indexOf(p);
         isMoving = true;
         openModal(p);
-
       };
     }
 
     todayContainer.appendChild(div);
   });
 }
+
 
 function openModal(p = {}) {
   modal.classList.remove('hidden');
@@ -138,8 +161,10 @@ saveBtn.onclick = () => {
 searchInput.oninput = () => {
   const q = searchInput.value.toLowerCase();
 
+  if (searchClearTimer) clearTimeout(searchClearTimer);
+
   if (!q) {
-    render(promises, 'today');
+    render();
     return;
   }
 
@@ -147,8 +172,24 @@ searchInput.oninput = () => {
     p.name.toLowerCase().includes(q)
   );
 
-  render(res, 'search');
+  render(res, currentTab);
+
+  searchClearTimer = setTimeout(() => {
+    searchInput.value = '';
+    render();
+  }, 10000);
 };
+
+
+clearSearchBtn.onclick = () => {
+  searchInput.value = '';
+  render(promises, 'today');
+};
+
+homeBtn.onclick = () => {
+  location.reload();
+};
+
 
 render();
 

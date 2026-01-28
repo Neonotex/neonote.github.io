@@ -18,15 +18,26 @@
 
   <header class="app-header">
     <h1>NEONOTE</h1>
-    <input id="searchInput" type="text" placeholder="Search client name…" />
+<div class="search-wrapper">
+  <input id="searchInput" type="text" placeholder="Search client name…" />
+  <button id="clearSearch" title="Clear">✕</button>
+</div>
+
   </header>
 
-  <main id="overview">
+<main id="overview">
+  <div class="tabs">
+  <button class="tab active" data-tab="today">Today</button>
+  <button class="tab" data-tab="all">All</button>
+  <button class="tab" data-tab="done">Done</button>
+</div>
+  <section id="promiseSection">
     <div id="todayContainer"></div>
-  </main>
+  </section>
+</main>
 
-  <button id="addBtn" class="floating-btn">＋</button>
-
+<button id="homeBtn" class="floating-btn home-btn">🏠</button>
+<button id="addBtn" class="floating-btn">＋</button>
 
   <div id="promiseModal" class="modal hidden">
     <div class="modal-content">
