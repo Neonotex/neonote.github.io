@@ -195,6 +195,40 @@ homeBtn.onclick = () => {
   location.reload();
 };
 
+let deferredPrompt;
+const installBanner = document.getElementById('installBanner');
+const installBtn = document.getElementById('installBtn');
+const dismissBtn = document.getElementById('dismissBtn');
+
+function isAppInstalled() {
+  return window.matchMedia('(display-mode: standalone)').matches
+    || window.navigator.standalone === true;
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  if (!isAppInstalled()) {
+    installBanner.classList.remove('hidden');
+  }
+});
+
+installBtn.onclick = async () => {
+  installBanner.classList.add('hidden');
+  deferredPrompt.prompt();
+
+  const choice = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+};
+
+dismissBtn.onclick = () => {
+  installBanner.classList.add('hidden');
+};
+
+if (isAppInstalled()) {
+  installBanner.classList.add('hidden');
+}
 
 render();
 
