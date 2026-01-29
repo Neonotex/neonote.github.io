@@ -97,6 +97,11 @@ function render(list = promises, mode = currentTab) {
       div.querySelector('.checkbox').onclick = e => {
         e.stopPropagation();
         p.done = true;
+        const idx = promises.indexOf(p);
+     if (idx > -1) {
+        promises.splice(idx, 1);
+        promises.push(p);
+      }
         enforceDoneLimit();
         save();
         render();
@@ -237,20 +242,17 @@ if (isAppInstalled()) {
 render();
 
 function enforceDoneLimit() {
-  const donePromises = promises.filter(p => p.done);
+  const doneIndexes = promises
+    .map((p, i) => (p.done ? i : -1))
+    .filter(i => i !== -1);
 
-  if (donePromises.length <= MAX_DONE) return;
+  if (doneIndexes.length <= MAX_DONE) return;
 
-  const excess = donePromises.length - MAX_DONE;
-  let removed = 0;
+  const excess = doneIndexes.length - MAX_DONE;
 
-  promises = promises.filter(p => {
-    if (p.done && removed < excess) {
-      removed++;
-      return false; 
-    }
-    return true;
-  });
+  for (let i = 0; i < excess; i++) {
+    promises.splice(doneIndexes[i] - i, 1);
+  }
 }
 
 
