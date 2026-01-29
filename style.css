@@ -12,6 +12,8 @@
   image-rendering: pixelated; 
   -webkit-font-smoothing: none; 
   -moz-osx-font-smoothing: grayscale; 
+  -webkit-tap-highlight-color: transparent;
+
 }
 
 
@@ -67,6 +69,10 @@ body {
   align-items: center;
   cursor: pointer;
 }
+.promise-header strong {
+  color: #299d8b;
+}
+
 
 .promise-details {
   display: none;
@@ -107,6 +113,18 @@ body {
   color: #000;
   border: none;
 }
+
+button:active,
+.floating-btn:active,
+.tab:active {
+  transform: scale(1.08);
+}
+button,
+.floating-btn,
+.tab {
+  transition: transform 0.1s ease;
+}
+
 
 .modal {
   position: fixed;
