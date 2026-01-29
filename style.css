@@ -203,7 +203,7 @@ button.secondary {
   padding: 8px;
   max-height: calc(100vh - 220px);
   overflow-y: auto;
-  background: #d6d6d6;
+  background: #154c45;
 }
 
 #promiseSection::-webkit-scrollbar {
