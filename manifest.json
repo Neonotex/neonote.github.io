@@ -1,6 +1,6 @@
 {
-  "name": "Neonote",
-  "short_name": "Neonote",
+  "name": "NeonoteX",
+  "short_name": "NeonoteX",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#000000",
