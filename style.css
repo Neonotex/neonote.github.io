@@ -204,7 +204,7 @@ button.secondary {
   border: 4px solid var(--green);
   padding: 8px;
   min-height: 520px;
-  max-height: calc(100vh - 220px);
+  max-height: 530px;
   overflow-y: auto;
   background: #154c45;
   border-radius: 8px; 
