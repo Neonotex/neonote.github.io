@@ -20,6 +20,8 @@ const closeModal = document.getElementById('closeModal');
 const searchInput = document.getElementById('searchInput');
 const clearSearchBtn = document.getElementById('clearSearch');
 const homeBtn = document.getElementById('homeBtn');
+const MAX_DONE = 50;
+
 
 let searchClearTimer = null;
 let currentTab = 'today';
@@ -95,6 +97,7 @@ function render(list = promises, mode = currentTab) {
       div.querySelector('.checkbox').onclick = e => {
         e.stopPropagation();
         p.done = true;
+        enforceDoneLimit();
         save();
         render();
       };
@@ -155,7 +158,7 @@ saveBtn.onclick = () => {
   } else {
     promises.push(p);
   }
-
+  enforceDoneLimit();
   save();
   close();
 
@@ -232,6 +235,24 @@ if (isAppInstalled()) {
 }
 
 render();
+
+function enforceDoneLimit() {
+  const donePromises = promises.filter(p => p.done);
+
+  if (donePromises.length <= MAX_DONE) return;
+
+  const excess = donePromises.length - MAX_DONE;
+  let removed = 0;
+
+  promises = promises.filter(p => {
+    if (p.done && removed < excess) {
+      removed++;
+      return false; 
+    }
+    return true;
+  });
+}
+
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('service-worker.js');
