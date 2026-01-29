@@ -343,3 +343,16 @@ button.secondary {
   color: #000;
 }
 
+#notificationModal .retro-modal {
+  max-width: 280px;
+  padding: 12px;
+  text-align: center;
+}
+
+#notificationModal p {
+  margin: 0 0 12px 0;
+  font-size: 1.2rem;
+  color: var(--green);
+  text-shadow: 1px 1px 0 #000;
+}
+

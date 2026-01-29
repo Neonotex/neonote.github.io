@@ -263,9 +263,9 @@ passwordConfirmBtn.onclick = async () => {
       save();
       render();
       backupModal.classList.add('hidden');
-      alert('Backup restored successfully');
+      showNotification('Backup restored successfully'); 
     } catch {
-      alert('Invalid password or corrupted backup');
+      showNotification('Invalid password or corrupted backup'); 
     }
   }
 
@@ -275,6 +275,20 @@ passwordConfirmBtn.onclick = async () => {
 passwordCancelBtn.onclick = () => {
   passwordModal.classList.add('hidden');
   backupFile = null;
+};
+
+
+const notificationModal = document.getElementById('notificationModal');
+const notificationText = document.getElementById('notificationText');
+const notificationCloseBtn = document.getElementById('notificationCloseBtn');
+
+function showNotification(message) {
+  notificationText.textContent = message;
+  notificationModal.classList.remove('hidden');
+}
+
+notificationCloseBtn.onclick = () => {
+  notificationModal.classList.add('hidden');
 };
 
 
