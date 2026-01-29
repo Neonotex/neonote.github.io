@@ -390,18 +390,25 @@ render();
 function adjustPromiseSectionHeight() {
   const promiseSection = document.getElementById('promiseSection');
   const floatingBtns = document.querySelectorAll('.floating-btn');
-  
-  let minBtnTop = Infinity;
+  const installBanner = document.getElementById('installBanner');
+
+  let minBtnTop = window.innerHeight;
   floatingBtns.forEach(btn => {
     const rect = btn.getBoundingClientRect();
     if (rect.top < minBtnTop) minBtnTop = rect.top;
   });
 
-  const safeMaxHeight = minBtnTop - 16; 
-  promiseSection.style.maxHeight = safeMaxHeight + 'px';
-  promiseSection.style.minHeight = safeMaxHeight * 0.95 + 'px';
+  const padding = 16;
+  const safeMaxHeight = minBtnTop - padding;
+
+  const bannerHeight = installBanner.classList.contains('hidden') ? 0 : installBanner.offsetHeight + padding;
+
+  promiseSection.style.maxHeight = (safeMaxHeight - bannerHeight) + 'px';
+  promiseSection.style.minHeight = ((safeMaxHeight - bannerHeight) * 0.95) + 'px';
 }
+
 adjustPromiseSectionHeight();
+
 window.addEventListener('resize', adjustPromiseSectionHeight);
 window.addEventListener('orientationchange', adjustPromiseSectionHeight);
 
