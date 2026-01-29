@@ -184,69 +184,97 @@ closeBackupModal.onclick = () => {
   backupModal.classList.add('hidden');
 };
 
-exportBackup.onclick = async () => {
-  const password = prompt('Set a backup password');
-  if (!password) return;
 
-  const salt = crypto.getRandomValues(new Uint8Array(16));
-  const iv = crypto.getRandomValues(new Uint8Array(12));
-  const key = await getKey(password, salt);
+const passwordModal = document.getElementById('passwordModal');
+const passwordInput = document.getElementById('passwordInput');
+const passwordConfirmBtn = document.getElementById('passwordConfirmBtn');
+const passwordCancelBtn = document.getElementById('passwordCancelBtn');
+const passwordModalTitle = document.getElementById('passwordModalTitle');
 
-  const payload = JSON.stringify({
-    version: 1,
-    created: Date.now(),
-    promises
-  });
+let backupAction = null; 
+let backupFile = null;
 
-  const encrypted = await crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv },
-    key,
-    new TextEncoder().encode(payload)
-  );
-
-  const blob = new Blob([salt, iv, new Uint8Array(encrypted)]);
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'neonotex-backup.neonotex';
-  a.click();
+exportBackup.onclick = () => {
+  backupAction = 'export';
+  passwordModalTitle.textContent = 'Set Backup Password';
+  passwordInput.value = '';
+  passwordModal.classList.remove('hidden');
 };
 
-importBackup.onclick = () => importFile.click();
+importBackup.onclick = () => {
+  importFile.click(); 
+};
 
-importFile.onchange = async e => {
-  const file = e.target.files[0];
-  if (!file) return;
+importFile.onchange = e => {
+  backupFile = e.target.files[0];
+  if (!backupFile) return;
 
-  const password = prompt('Enter backup password');
+  backupAction = 'import';
+  passwordModalTitle.textContent = 'Enter Backup Password';
+  passwordInput.value = '';
+  passwordModal.classList.remove('hidden');
+};
+
+passwordConfirmBtn.onclick = async () => {
+  const password = passwordInput.value.trim();
   if (!password) return;
 
-  const buffer = await file.arrayBuffer();
-  const bytes = new Uint8Array(buffer);
-
-  const salt = bytes.slice(0, 16);
-  const iv = bytes.slice(16, 28);
-  const data = bytes.slice(28);
-
-  try {
+  if (backupAction === 'export') {
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const iv = crypto.getRandomValues(new Uint8Array(12));
     const key = await getKey(password, salt);
-    const decrypted = await crypto.subtle.decrypt(
+
+    const payload = JSON.stringify({
+      version: 1,
+      created: Date.now(),
+      promises
+    });
+
+    const encrypted = await crypto.subtle.encrypt(
       { name: 'AES-GCM', iv },
       key,
-      data
+      new TextEncoder().encode(payload)
     );
 
-    const parsed = JSON.parse(
-      new TextDecoder().decode(decrypted)
-    );
+    const blob = new Blob([salt, iv, new Uint8Array(encrypted)]);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'neonotex-backup.neonotex';
+    a.click();
 
-    promises = parsed.promises || [];
-    save();
-    render();
-    backupModal.classList.add('hidden');
-    alert('Backup restored successfully');
-  } catch {
-    alert('Invalid password or corrupted backup');
+  } else if (backupAction === 'import' && backupFile) {
+    const buffer = await backupFile.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+
+    const salt = bytes.slice(0, 16);
+    const iv = bytes.slice(16, 28);
+    const data = bytes.slice(28);
+
+    try {
+      const key = await getKey(password, salt);
+      const decrypted = await crypto.subtle.decrypt(
+        { name: 'AES-GCM', iv },
+        key,
+        data
+      );
+
+      const parsed = JSON.parse(new TextDecoder().decode(decrypted));
+      promises = parsed.promises || [];
+      save();
+      render();
+      backupModal.classList.add('hidden');
+      alert('Backup restored successfully');
+    } catch {
+      alert('Invalid password or corrupted backup');
+    }
   }
+
+  passwordModal.classList.add('hidden');
+};
+
+passwordCancelBtn.onclick = () => {
+  passwordModal.classList.add('hidden');
+  backupFile = null;
 };
 
 

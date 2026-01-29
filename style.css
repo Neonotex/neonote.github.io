@@ -294,3 +294,52 @@ button.secondary {
   opacity: 0.8;
   pointer-events: none;
 }
+
+
+.retro-modal {
+  background: var(--bg);
+  border: 3px solid var(--green);
+  padding: 16px;
+  width: 90%;
+  max-width: 320px;
+  text-align: center;
+  font-family: "Courier New", monospace;
+  color: var(--light);
+  box-shadow: 0 0 0 2px #000;
+}
+
+.retro-modal h2 {
+  margin: 0 0 12px 0;
+  color: var(--green);
+  text-shadow: 1px 1px 0 #000;
+  font-size: 1.5rem;
+}
+
+.retro-modal input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 8px;
+  background: #111;
+  color: var(--light);
+  border: 2px solid var(--red);
+  font-size: 1.2rem;
+  outline: none;
+}
+
+.retro-modal button {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 6px;
+  background: var(--green);
+  border: 2px solid #000;
+  font-size: 1.2rem;
+  color: #000;
+  cursor: pointer;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.retro-modal button.secondary {
+  background: var(--red);
+  color: #000;
+}
+
