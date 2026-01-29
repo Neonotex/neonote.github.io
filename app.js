@@ -392,26 +392,24 @@ function adjustPromiseSectionHeight() {
   const floatingBtns = document.querySelectorAll('.floating-btn');
   const installBanner = document.getElementById('installBanner');
 
-  let minBtnTop = window.innerHeight;
+  let maxBtnBottom = 0;
+
   floatingBtns.forEach(btn => {
     const rect = btn.getBoundingClientRect();
-    if (rect.top < minBtnTop) minBtnTop = rect.top;
+    const btnBottom = rect.top + rect.height;
+    if (btnBottom > maxBtnBottom) maxBtnBottom = btnBottom;
   });
 
   const padding = 16;
-  const safeMaxHeight = minBtnTop - padding;
+  const safeMaxHeight = window.innerHeight - maxBtnBottom - padding;
 
   const bannerHeight = installBanner.classList.contains('hidden') ? 0 : installBanner.offsetHeight + padding;
 
-  promiseSection.style.maxHeight = (safeMaxHeight - bannerHeight) + 'px';
-  promiseSection.style.minHeight = ((safeMaxHeight - bannerHeight) * 0.95) + 'px';
+  const finalHeight = safeMaxHeight - bannerHeight;
+
+  promiseSection.style.maxHeight = finalHeight + 'px';
+  promiseSection.style.minHeight = (finalHeight * 0.95) + 'px';
 }
-
-adjustPromiseSectionHeight();
-
-window.addEventListener('resize', adjustPromiseSectionHeight);
-window.addEventListener('orientationchange', adjustPromiseSectionHeight);
-
 
 function enforceDoneLimit() {
   const doneIndexes = promises
