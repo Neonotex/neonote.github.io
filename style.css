@@ -1,5 +1,5 @@
 :root {
-  --bg: #081816;
+  --bg: #11433d;
   --light: #f5f5f5;
   --red: #cc9503;
   --green: #299d8b;
@@ -128,7 +128,7 @@ button,
 }
 .backup-btn {
   right: 88px; 
-  background: #00ff9c;
+  background: var(--green);
   color: #000;
 }
 
