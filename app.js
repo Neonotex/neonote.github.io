@@ -389,18 +389,19 @@ render();
 
 function adjustPromiseSectionHeight() {
   const promiseSection = document.getElementById('promiseSection');
-  const homeBtn = document.getElementById('homeBtn');
+  const floatingWrapper = document.getElementById('floatingBtnsWrapper');
   const installBanner = document.getElementById('installBanner');
 
   const padding = 16;
   const bannerHeight = installBanner.classList.contains('hidden') ? 0 : installBanner.offsetHeight + padding;
 
-  const homeRect = homeBtn.getBoundingClientRect();
-  const safeMaxHeight = homeRect.top - padding - bannerHeight;
+  const wrapperRect = floatingWrapper.getBoundingClientRect();
+  const safeMaxHeight = wrapperRect.top - padding - bannerHeight;
 
   promiseSection.style.maxHeight = safeMaxHeight + 'px';
   promiseSection.style.minHeight = (safeMaxHeight * 0.95) + 'px';
 }
+
 
 adjustPromiseSectionHeight();
 window.addEventListener('resize', adjustPromiseSectionHeight);

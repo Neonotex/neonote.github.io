@@ -362,3 +362,17 @@ button.secondary {
   text-shadow: 1px 1px 0 #000;
 }
 
+#floatingBtnsWrapper {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+#floatingBtnsWrapper .floating-btn {
+  position: relative;
+  bottom: 0; 
+  right: 0;
+}
