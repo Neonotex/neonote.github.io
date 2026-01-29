@@ -389,27 +389,22 @@ render();
 
 function adjustPromiseSectionHeight() {
   const promiseSection = document.getElementById('promiseSection');
-  const floatingBtns = document.querySelectorAll('.floating-btn');
+  const homeBtn = document.getElementById('homeBtn');
   const installBanner = document.getElementById('installBanner');
 
-  let maxBtnBottom = 0;
-
-  floatingBtns.forEach(btn => {
-    const rect = btn.getBoundingClientRect();
-    const btnBottom = rect.top + rect.height;
-    if (btnBottom > maxBtnBottom) maxBtnBottom = btnBottom;
-  });
-
   const padding = 16;
-  const safeMaxHeight = window.innerHeight - maxBtnBottom - padding;
-
   const bannerHeight = installBanner.classList.contains('hidden') ? 0 : installBanner.offsetHeight + padding;
 
-  const finalHeight = safeMaxHeight - bannerHeight;
+  const homeRect = homeBtn.getBoundingClientRect();
+  const safeMaxHeight = homeRect.top - padding - bannerHeight;
 
-  promiseSection.style.maxHeight = finalHeight + 'px';
-  promiseSection.style.minHeight = (finalHeight * 0.95) + 'px';
+  promiseSection.style.maxHeight = safeMaxHeight + 'px';
+  promiseSection.style.minHeight = (safeMaxHeight * 0.95) + 'px';
 }
+
+adjustPromiseSectionHeight();
+window.addEventListener('resize', adjustPromiseSectionHeight);
+window.addEventListener('orientationchange', adjustPromiseSectionHeight);
 
 function enforceDoneLimit() {
   const doneIndexes = promises
