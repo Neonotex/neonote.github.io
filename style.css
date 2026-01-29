@@ -203,7 +203,7 @@ button.secondary {
 #promiseSection {
   border: 4px solid var(--green);
   padding: 8px;
-  min-height: 530px;
+  min-height: 520px;
   max-height: calc(100vh - 220px);
   overflow-y: auto;
   background: #154c45;
