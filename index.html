@@ -62,6 +62,44 @@
 <button id="homeBtn" class="floating-btn home-btn">🏠</button>
 <button id="backupOpenBtn" class="floating-btn backup-btn">💾</button>
 <button id="addBtn" class="floating-btn">＋</button>
+<button id="accountsBtn" class="floating-btn accounts-btn">👤</button>
+
+<div id="accountsModal" class="modal hidden">
+  <div class="modal-content retro-modal" style="max-height:300px; overflow-y:auto;">
+    <h2>Accounts</h2>
+    <button id="createAccountBtn">+ Create Account</button>
+    <div id="accountsList"></div>
+    <button id="closeAccountsModal" class="secondary">Close</button>
+  </div>
+</div>
+
+<div id="createAccountModal" class="modal hidden">
+  <div class="modal-content retro-modal">
+    <h2>Create Account</h2>
+    <input id="newAccountName" type="text" placeholder="Account name (max 10 chars)" maxlength="10" />
+    <button id="saveAccountBtn">Save</button>
+    <button id="cancelCreateAccountBtn" class="secondary">Cancel</button>
+  </div>
+</div>
+
+<div id="accountOptionsModal" class="modal hidden">
+  <div class="modal-content retro-modal">
+    <h2 id="accountOptionsTitle">Account</h2>
+    <button id="addClientBtn">Add Client</button>
+    <button id="viewAccountBtn">View Account</button>
+    <button id="cancelAccountOptionsBtn" class="secondary">Cancel</button>
+  </div>
+</div>
+
+<div id="addClientModal" class="modal hidden">
+  <div class="modal-content retro-modal">
+    <h2>Add Client</h2>
+    <input id="clientNameInput" type="text" placeholder="Client Name" />
+    <textarea id="clientDescInput" placeholder="Description"></textarea>
+    <button id="saveClientBtn">Save</button>
+    <button id="cancelAddClientBtn" class="secondary">Cancel</button>
+  </div>
+</div>
 
   <div id="promiseModal" class="modal hidden">
     <div class="modal-content">

@@ -364,3 +364,10 @@ button.secondary {
   text-shadow: 1px 1px 0 #000;
 }
 
+.accounts-btn {
+  right: 160px; 
+  bottom: 16px;
+  background: #299d8b;
+  color: #000;
+}
+

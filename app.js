@@ -21,6 +21,28 @@ const closeBackupModal = document.getElementById('closeBackupModal');
 const exportBackup = document.getElementById('exportBackup');
 const importBackup = document.getElementById('importBackup');
 const importFile = document.getElementById('importFile');
+const accountsBtn = document.getElementById('accountsBtn');
+const accountsModal = document.getElementById('accountsModal');
+const createAccountModal = document.getElementById('createAccountModal');
+const accountOptionsModal = document.getElementById('accountOptionsModal');
+const addClientModal = document.getElementById('addClientModal');
+
+const createAccountBtn = document.getElementById('createAccountBtn');
+const accountsList = document.getElementById('accountsList');
+const closeAccountsModal = document.getElementById('closeAccountsModal');
+
+const newAccountName = document.getElementById('newAccountName');
+const saveAccountBtn = document.getElementById('saveAccountBtn');
+const cancelCreateAccountBtn = document.getElementById('cancelCreateAccountBtn');
+
+const addClientBtn = document.getElementById('addClientBtn');
+const viewAccountBtn = document.getElementById('viewAccountBtn');
+const cancelAccountOptionsBtn = document.getElementById('cancelAccountOptionsBtn');
+const clientNameInput = document.getElementById('clientNameInput');
+const clientDescInput = document.getElementById('clientDescInput');
+const saveClientBtn = document.getElementById('saveClientBtn');
+const cancelAddClientBtn = document.getElementById('cancelAddClientBtn');
+
 const saveBtn = document.getElementById('savePromise');
 const closeModal = document.getElementById('closeModal');
 const searchInput = document.getElementById('searchInput');
@@ -40,6 +62,9 @@ const description = document.getElementById('description');
 let editIndex = null;
 let promises = JSON.parse(localStorage.getItem('neonote_promises') || '[]');
 let isMoving = false;
+let accounts = JSON.parse(localStorage.getItem('neonote_accounts') || '[]');
+let currentAccountId = null;
+
 
 
 function today() {
@@ -179,6 +204,78 @@ closeModal.onclick = close;
 backupOpenBtn.onclick = () => {
   backupModal.classList.remove('hidden');
 };
+
+accountsBtn.onclick = () => {
+  renderAccountsList();
+  accountsModal.classList.remove('hidden');
+};
+
+closeAccountsModal.onclick = () => accountsModal.classList.add('hidden');
+
+createAccountBtn.onclick = () => {
+  newAccountName.value = '';
+  createAccountModal.classList.remove('hidden');
+};
+
+cancelCreateAccountBtn.onclick = () => createAccountModal.classList.add('hidden');
+
+saveAccountBtn.onclick = () => {
+  const name = newAccountName.value.trim();
+  if (!name || name.length > 10) {
+    alert('Account name required (max 10 chars)');
+    return;
+  }
+
+  const newAccount = {
+    id: 'acc_' + Date.now(),
+    name,
+    clients: []
+  };
+  accounts.push(newAccount);
+  localStorage.setItem('neonote_accounts', JSON.stringify(accounts));
+  createAccountModal.classList.add('hidden');
+  renderAccountsList();
+};
+
+function renderAccountsList() {
+  accountsList.innerHTML = '';
+  accounts.forEach(acc => {
+    const div = document.createElement('div');
+    div.style.display = 'flex';
+    div.style.justifyContent = 'space-between';
+    div.style.alignItems = 'center';
+    div.style.margin = '4px 0';
+    div.innerHTML = `
+      <span>${acc.name}</span>
+      <div>
+        <button class="account-select" data-id="${acc.id}">Open</button>
+        <button class="account-delete" data-id="${acc.id}">❌</button>
+      </div>
+    `;
+    accountsList.appendChild(div);
+  });
+
+  accountsList.querySelectorAll('.account-select').forEach(btn => {
+    btn.onclick = e => {
+      const accId = e.target.dataset.id;
+      currentAccountId = accId;
+      accountsModal.classList.add('hidden');
+      showTemporaryAccountTab(accId);
+    };
+  });
+
+  accountsList.querySelectorAll('.account-delete').forEach(btn => {
+    btn.onclick = e => {
+      const accId = e.target.dataset.id;
+      if (confirm('Delete this account and all its clients?')) {
+        accounts = accounts.filter(a => a.id !== accId);
+        localStorage.setItem('neonote_accounts', JSON.stringify(accounts));
+        renderAccountsList();
+      }
+    };
+  });
+}
+
 
 closeBackupModal.onclick = () => {
   backupModal.classList.add('hidden');
@@ -386,6 +483,72 @@ if (isAppInstalled()) {
 }
 
 render();
+
+function showTemporaryAccountTab(accId) {
+  const acc = accounts.find(a => a.id === accId);
+  if (!acc) return;
+
+  const existingTemp = document.querySelector('.tab.temp-account');
+  if (existingTemp) existingTemp.remove();
+
+  const tabsContainer = document.querySelector('.tabs');
+  const allTab = tabsContainer.querySelector('[data-tab="all"]');
+
+  const tempTab = document.createElement('button');
+  tempTab.className = 'tab temp-account active';
+  tempTab.textContent = acc.name;
+  tempTab.dataset.tab = 'account';
+
+  tabsContainer.insertBefore(tempTab, allTab);
+
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  tempTab.classList.add('active');
+  currentTab = 'account';
+
+  renderAccount(accId);
+
+  tempTab.onclick = () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tempTab.classList.add('active');
+    currentTab = 'account';
+    renderAccount(accId);
+  };
+}
+
+function renderAccount(accId) {
+  todayContainer.innerHTML = '';
+  const acc = accounts.find(a => a.id === accId);
+  if (!acc || !acc.clients.length) {
+    todayContainer.innerHTML = '<p class="empty-state">No clients yet. Add some!</p>';
+    return;
+  }
+
+  acc.clients.forEach(client => {
+    const div = document.createElement('div');
+    div.className = 'promise';
+    div.innerHTML = `
+      <div class="promise-header">
+        <strong>${client.name}</strong>
+        <button class="delete-client" style="margin-left:8px;">❌</button>
+      </div>
+      <div class="promise-details">
+        <p>${client.desc}</p>
+      </div>
+    `;
+    div.querySelector('.promise-header').onclick = () => {
+      div.classList.toggle('show');
+    };
+    div.querySelector('.delete-client').onclick = e => {
+      e.stopPropagation();
+      if (confirm('Delete this client?')) {
+        acc.clients = acc.clients.filter(c => c.id !== client.id);
+        localStorage.setItem('neonote_accounts', JSON.stringify(accounts));
+        renderAccount(accId);
+      }
+    };
+    todayContainer.appendChild(div);
+  });
+}
 
 
 function enforceDoneLimit() {
