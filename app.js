@@ -434,13 +434,16 @@ passwordConfirmBtn.onclick = async () => {
       );
 
       const parsed = JSON.parse(new TextDecoder().decode(decrypted));
-      promises = parsed.promises || [];
-      accounts = parsed.accounts || [];
-      markOverduePromisesDone();
-      save();
-      render();
-      backupModal.classList.add('hidden');
-      showNotification('Backup restored successfully'); 
+promises = parsed.promises || [];
+accounts = parsed.accounts || [];
+save();  
+localStorage.setItem('neonote_accounts', JSON.stringify(accounts)); 
+
+markOverduePromisesDone();
+render();
+backupModal.classList.add('hidden');
+showNotification('Backup restored successfully');
+
     } catch {
       showNotification('Invalid password or corrupted backup'); 
     }
