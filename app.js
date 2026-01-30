@@ -1,4 +1,38 @@
 document.addEventListener('DOMContentLoaded', () => {
+  
+  const appPasswordEnabled = localStorage.getItem(PASSWORD_ENABLED_KEY) === 'true';
+
+if (appPasswordEnabled) {
+  passwordModalTitle.textContent = 'Unlock NeonoteX';
+  passwordInput.value = '';
+  passwordModal.classList.remove('hidden');
+
+  passwordConfirmBtn.onclick = async () => {
+    const pw = passwordInput.value.trim();
+    const stored = localStorage.getItem(PASSWORD_HASH_KEY);
+    if (!stored) return;
+
+    const hash = await crypto.subtle.digest(
+      'SHA-256',
+      new TextEncoder().encode(pw)
+    );
+
+    const inputHash = Array.from(new Uint8Array(hash)).join(',');
+
+    if (inputHash !== stored) {
+      showNotification('Wrong password');
+      return;
+    }
+
+    passwordModal.classList.add('hidden');
+  };
+
+  passwordCancelBtn.onclick = () => {
+    location.reload(); // prevents access
+  };
+}
+
+
 
 document.querySelectorAll('.tab').forEach(tab => {
   tab.onclick = () => {
@@ -143,38 +177,6 @@ togglePasswordBtn.onclick = () => {
     };
   }
 };
-
-const appPasswordEnabled = localStorage.getItem(PASSWORD_ENABLED_KEY) === 'true';
-
-if (appPasswordEnabled) {
-  passwordModalTitle.textContent = 'Unlock NeonoteX';
-  passwordInput.value = '';
-  passwordModal.classList.remove('hidden');
-
-  passwordConfirmBtn.onclick = async () => {
-    const pw = passwordInput.value.trim();
-    const stored = localStorage.getItem(PASSWORD_HASH_KEY);
-    if (!stored) return;
-
-    const hash = await crypto.subtle.digest(
-      'SHA-256',
-      new TextEncoder().encode(pw)
-    );
-
-    const inputHash = Array.from(new Uint8Array(hash)).join(',');
-
-    if (inputHash !== stored) {
-      showNotification('Wrong password');
-      return;
-    }
-
-    passwordModal.classList.add('hidden');
-  };
-
-  passwordCancelBtn.onclick = () => {
-    location.reload(); // prevents access
-  };
-}
 
 
 let searchClearTimer = null;

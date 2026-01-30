@@ -490,7 +490,7 @@ button.secondary {
   width: 40px; 
   height: 40px;
   font-size: 1.4rem;
-  right: 300px; 
+  right: 320px; 
   bottom: 16px;
   transition: right 0.3s ease;
   background: var(--green); 
@@ -507,7 +507,7 @@ button.secondary {
 }
 
 .hide-btn.slide-left {
-  right: 300px; 
+  right: 320px; 
 }
 
 .promise-details p {
@@ -516,7 +516,7 @@ button.secondary {
 }
 
 .settings-btn {
-  right: 268px; 
+  right: 300px; 
   bottom: 16px;
   background: var(--green);
   color: #000;
