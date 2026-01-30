@@ -65,6 +65,20 @@ let isMoving = false;
 let accounts = JSON.parse(localStorage.getItem('neonote_accounts') || '[]');
 let currentAccountId = null;
 
+function markOverduePromisesDone() {
+  const todayStr = today();
+  let changed = false;
+
+  promises.forEach(p => {
+    if (!p.done && p.date < todayStr) {
+      p.done = true;
+      changed = true;
+    }
+  });
+
+  if (changed) save();
+}
+
 
 addClientBtn.onclick = () => {
   clientNameInput.value = '';
@@ -190,18 +204,23 @@ function render(list = promises, mode = currentTab) {
 
     if (mode === 'today') {
       div.querySelector('.checkbox').onclick = e => {
-        e.stopPropagation();
-        p.done = true;
-        const idx = promises.indexOf(p);
-     if (idx > -1) {
-        promises.splice(idx, 1);
-        promises.push(p);
-      }
-        enforceDoneLimit();
-        save();
-        render();
-      };
+  e.stopPropagation();
+
+  showConfirm(`Mark promise "${p.name}" as Done?`, () => {
+    p.done = true;
+
+    const idx = promises.indexOf(p);
+    if (idx > -1) {
+      promises.splice(idx, 1);
+      promises.push(p); 
     }
+
+    enforceDoneLimit();
+    save();
+    render();
+  });
+  };
+  }
 
     div.querySelector('.promise-header').onclick = () => {
       div.classList.toggle('show');
@@ -362,7 +381,8 @@ passwordConfirmBtn.onclick = async () => {
     const payload = JSON.stringify({
       version: 1,
       created: Date.now(),
-      promises
+      promises,
+      accounts
     });
 
     const encrypted = await crypto.subtle.encrypt(
@@ -395,6 +415,8 @@ passwordConfirmBtn.onclick = async () => {
 
       const parsed = JSON.parse(new TextDecoder().decode(decrypted));
       promises = parsed.promises || [];
+      accounts = parsed.accounts || [];
+      markOverduePromisesDone();
       save();
       render();
       backupModal.classList.add('hidden');
@@ -580,7 +602,9 @@ if (isAppInstalled()) {
   installBanner.classList.add('hidden');
 }
 
+markOverduePromisesDone();
 render();
+
 
 function showTemporaryAccountTab(accId) {
   const acc = accounts.find(a => a.id === accId);
