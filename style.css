@@ -487,13 +487,13 @@ button.secondary {
 }
 
 .hide-btn {
-  width: 28px; 
-  height: 28px;
+  width: 40px; 
+  height: 40px;
   font-size: 1.4rem;
-  right: 284px; 
+  right: 300px; 
   bottom: 16px;
   transition: right 0.3s ease;
-  background: #cc9503; 
+  background: var(--green); 
   color: #000;
 }
 
