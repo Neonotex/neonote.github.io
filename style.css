@@ -397,9 +397,11 @@ button.secondary {
 .accounts-modal {
   display: flex;
   flex-direction: column;
-  max-height: 85vh; 
   width: 90%;
   max-width: 320px;
+  min-height: 395px;
+  max-height: 400px;
+  padding: 16px;
 }
 
 .accounts-header {
