@@ -11,6 +11,14 @@ document.querySelectorAll('.tab').forEach(tab => {
     render();
   };
 });
+const sourceCodeBtn = document.getElementById('sourceCodeBtn');
+
+if (sourceCodeBtn) {
+  sourceCodeBtn.onclick = () => {
+    window.open('https://github.com/Neonotex/neonotex.github.io', '_blank');
+  };
+}
+
 
 const todayContainer = document.getElementById('todayContainer');
 const modal = document.getElementById('promiseModal');

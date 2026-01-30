@@ -129,15 +129,81 @@
         Use this if the UI feels stuck or after heavy changes.
       </p>
 
-      <h3>➕ Add Promise Button (＋)</h3>
-      <p>
-        Tap this to create a new client promise.
-      </p>
-      <ul>
-        <li><b>Client Name</b> – Who made the promise</li>
-        <li><b>Date</b> – When the promise is due</li>
-        <li><b>Description</b> – Notes or reasons</li>
-      </ul>
+<h3>➕ Add Promise Button (＋)</h3>
+<p>
+  Tap this button to create a new <b>client promise</b>. This allows you to record commitments, deadlines, or tasks for your clients in an organized way.
+</p>
+
+<h4>What You Can Add for Each Promise</h4>
+<ul>
+  <li><b>Client Name</b> – The name of the person or client who made the promise.</li>
+  <li><b>Date</b> – The due date for the promise. This helps track what is due today, upcoming, or overdue.</li>
+  <li><b>Description</b> – Additional notes or reasons for the promise. Use this to add context or details about the client or promise.</li>
+</ul>
+
+<h4>How Promises & Clients Appear in NeonoteX</h4>
+<p>
+Once you add promises, they appear in the lists under the tabs: <b>Today</b>, <b>All</b>, <b>Done</b>, and inside specific <b>Accounts</b> if you organize clients there.
+</p>
+
+<p>
+Each listed promise or client is interactive:
+</p>
+
+<ul>
+  <li>Tap a listed <b>client name</b> to view all details about that client.</li>
+  <li>Tap a listed <b>promise name</b> to see its details, including the <b>Move Promise</b> button.</li>
+  <li>Move Promise lets you reschedule or edit an existing promise.</li>
+</ul>
+
+<h4>Visual Guide / Interaction Diagram</h4>
+<pre>
+[ Today Tab ]
+ ├─ Juan Pisot
+ │    Tap name → Show details
+ │    Move Promise button visible after tap
+ │
+ ├─ Maria Chismosa
+ │    Tap name → Show details
+ │    Move Promise button visible after tap
+ │
+ └─ Pedro Tamad
+      Tap name → Show details
+      Move Promise button visible after tap
+
+[ All Tab ]
+ ├─ Juan Pisot
+ ├─ Maria Chismosa
+ └─ Pedro Tamad
+   (Same tap-to-view details functionality)
+
+[ Done Tab ]
+ ├─ Completed promises
+ └─ Completed promises
+   (Details view available, Move button hidden)
+
+[ Account Tab (AREA-A) ]
+ ├─ Juan Dela Cruz
+ │    Tap name → Show details
+ │
+ └─ Maria Santos
+      Tap name → Show details
+</pre>
+
+<h4>Summary of Interactions</h4>
+<ul>
+  <li>All promises and clients are tappable for detailed view.</li>
+  <li>Promises in <b>Today</b> or <b>All</b> allow the user to access a <b>Move Promise</b> button after tapping.</li>
+  <li>Clients inside accounts behave the same: tap to see details.</li>
+  <li>This keeps your workflow clean, interactive, and organized.</li>
+</ul>
+ 
+ <h3>✅ Why this is useful:</h3>
+ <ul>
+   <li>Users can quickly view details without opening separate screens.</li>
+   <li>Move Promise allows rescheduling easily.</li>
+   <li>Accounts and tabs keep promises organized while maintaining the same interactive experience.</li>
+ </ul>
 
       <h3>💾 Backup Button</h3>
       <p>
@@ -379,13 +445,13 @@ Think of <b>Accounts</b> like folders, and <b>Clients</b> like files inside them
 <pre>
 👤 Accounts
  ├─ 📁 AREA-A
- │   ├─ 👤 Juan Dela Cruz
- │   ├─ 👤 Maria Santos
- │   └─ 👤 Pedro Reyes
+ │   ├─ 👤 Juan Pisot
+ │   ├─ 👤 Maria Chismosa
+ │   └─ 👤 Pedro Tamad
  │
  ├─ 📁 AREA-B
- │   ├─ 👤 Ana Lopez
- │   └─ 👤 Mark Villanueva
+ │   ├─ 👤 Ana Sikat
+ │   └─ 👤 Mark Kilat
  │
  └─ 📁 PERSONAL
      ├─ 📝 Grocery Notes
@@ -506,9 +572,8 @@ NeonoteX faster, cleaner, and easier to use as your data grows.
         <li>Backups are AES-256 encrypted</li>
       </ul>
 
-      <button onclick="window.open('https://github.com/Neonotex/neonotex.github.io', '_blank')">
-        📦 Source Code
-      </button>
+<button id="sourceCodeBtn">📦 Source Code</button>
+
 
     </div>
   </div>
