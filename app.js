@@ -708,6 +708,29 @@ function enforceDoneLimit() {
   }
 }
 
+const hideBtn = document.getElementById('hideBtn');
+let hidden = false;
+
+hideBtn.onclick = () => {
+  hidden = !hidden;
+
+  const floatingButtons = document.querySelectorAll('.floating-btn:not(.hide-btn)');
+
+  if (hidden) {
+    floatingButtons.forEach(btn => btn.classList.add('slide-out'));
+
+    hideBtn.classList.add('slide-right');
+    hideBtn.classList.remove('slide-left');
+    hideBtn.textContent = '❮'; 
+  } else {
+
+    floatingButtons.forEach(btn => btn.classList.remove('slide-out'));
+    hideBtn.classList.add('slide-left');
+    hideBtn.classList.remove('slide-right');
+    hideBtn.textContent = '❯'; 
+  }
+};
+
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('service-worker.js');

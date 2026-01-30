@@ -485,3 +485,27 @@ button.secondary {
   background: var(--green);
   border: 2px solid #000;
 }
+
+.hide-btn {
+  width: 28px; 
+  height: 28px;
+  font-size: 1.4rem;
+  right: 284px; 
+  bottom: 16px;
+  transition: right 0.3s ease;
+  background: #cc9503; 
+  color: #000;
+}
+
+.floating-btn.slide-out {
+  right: -70px;
+  transition: right 0.3s ease;
+}
+
+.hide-btn.slide-right {
+  right: 16px; 
+}
+
+.hide-btn.slide-left {
+  right: 284px; 
+}
