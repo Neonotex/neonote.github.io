@@ -509,3 +509,9 @@ button.secondary {
 .hide-btn.slide-left {
   right: 300px; 
 }
+
+.promise-details p {
+  white-space: pre-wrap; 
+  word-wrap: break-word;  
+}
+
