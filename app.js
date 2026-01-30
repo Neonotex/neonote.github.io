@@ -1,74 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-  
-  const appPasswordEnabled =
-  localStorage.getItem(PASSWORD_ENABLED_KEY) === 'true';
-
-if (appPasswordEnabled) {
-  passwordModalTitle.textContent = 'Unlock NeonoteX';
-  passwordInput.value = '';
-  passwordModal.classList.remove('hidden');
-
-  passwordConfirmBtn.onclick = async () => {
-  const pw = passwordInput.value.trim();
-  if (!pw) return;
-
-  if (passwordAction === 'enable') {
-    if (pw.length < 4) {
-      showNotification('Password must be at least 4 characters');
-      return;
-    }
-
-    const hash = await crypto.subtle.digest(
-      'SHA-256',
-      new TextEncoder().encode(pw)
-    );
-
-    localStorage.setItem(
-      PASSWORD_HASH_KEY,
-      Array.from(new Uint8Array(hash)).join(',')
-    );
-    localStorage.setItem(PASSWORD_ENABLED_KEY, 'true');
-
-    passwordEnabled = true;
-    updatePasswordToggleUI();
-    showNotification('Password protection enabled');
-  }
-
-  else if (passwordAction === 'disable') {
-    const stored = localStorage.getItem(PASSWORD_HASH_KEY);
-    if (!stored) return;
-
-    const hash = await crypto.subtle.digest(
-      'SHA-256',
-      new TextEncoder().encode(pw)
-    );
-
-    if (Array.from(new Uint8Array(hash)).join(',') !== stored) {
-      showNotification('Incorrect password');
-      return;
-    }
-
-    localStorage.setItem(PASSWORD_ENABLED_KEY, 'false');
-    passwordEnabled = false;
-    updatePasswordToggleUI();
-    showNotification('Password protection disabled');
-  }
-
-  else if (backupAction === 'export' || backupAction === 'import') {
-
-    return;
-  }
-
-  passwordAction = null;
-  passwordInput.value = '';
-  passwordModal.classList.add('hidden');
-};
-
-  passwordCancelBtn.onclick = () => {
-    location.reload();
-  };
-}
-
 
 document.querySelectorAll('.tab').forEach(tab => {
   tab.onclick = () => {
@@ -129,43 +59,8 @@ const homeBtn = document.getElementById('homeBtn');
 const helpBtn = document.getElementById('helpBtn');
 const helpModal = document.getElementById('helpModal');
 const closeHelpModal = document.getElementById('closeHelpModal');
-const PASSWORD_ENABLED_KEY = 'neonote_password_enabled';
-const PASSWORD_HASH_KEY = 'neonote_password_hash';
+
 const MAX_DONE = 15;
-
-const settingsBtn = document.getElementById('settingsBtn');
-const settingsModal = document.getElementById('settingsModal');
-const closeSettingsBtn = document.getElementById('closeSettingsBtn');
-const togglePasswordBtn = document.getElementById('togglePasswordBtn');
-
-let passwordEnabled = localStorage.getItem(PASSWORD_ENABLED_KEY) === 'true';
-
-function updatePasswordToggleUI() {
-  togglePasswordBtn.textContent = passwordEnabled ? 'ON' : 'OFF';
-}
-
-settingsBtn.onclick = () => {
-  updatePasswordToggleUI();
-  settingsModal.classList.remove('hidden');
-};
-
-closeSettingsBtn.onclick = () => {
-  settingsModal.classList.add('hidden');
-};
-
-togglePasswordBtn.onclick = () => {
-  settingsModal.classList.add('hidden');
-
-  passwordAction = passwordEnabled ? 'disable' : 'enable';
-
-  passwordModalTitle.textContent = passwordEnabled
-    ? 'Enter Password to Disable'
-    : 'Create App Password';
-
-  passwordInput.value = '';
-  passwordModal.classList.remove('hidden');
-};
-
 
 
 let searchClearTimer = null;
@@ -472,7 +367,6 @@ const passwordModalTitle = document.getElementById('passwordModalTitle');
 
 let backupAction = null; 
 let backupFile = null;
-let passwordAction = null;
 
 exportBackup.onclick = () => {
   backupAction = 'export';
@@ -839,7 +733,6 @@ hideBtn.onclick = () => {
     hideBtn.textContent = '❯'; 
   }
 };
-
 
 
 if ('serviceWorker' in navigator) {

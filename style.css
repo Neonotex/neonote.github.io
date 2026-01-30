@@ -515,10 +515,3 @@ button.secondary {
   word-wrap: break-word;  
 }
 
-.settings-btn {
-  right: 16px; 
-  bottom: 88px;
-  background: var(--green);
-  color: #000;
-}
-
