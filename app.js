@@ -66,6 +66,46 @@ let accounts = JSON.parse(localStorage.getItem('neonote_accounts') || '[]');
 let currentAccountId = null;
 
 
+addClientBtn.onclick = () => {
+  clientNameInput.value = '';
+  clientDescInput.value = '';
+  accountOptionsModal.classList.add('hidden');
+  addClientModal.classList.remove('hidden');
+};
+
+viewAccountBtn.onclick = () => {
+  accountOptionsModal.classList.add('hidden');
+  showTemporaryAccountTab(currentAccountId);
+};
+
+cancelAccountOptionsBtn.onclick = () => {
+  accountOptionsModal.classList.add('hidden');
+};
+
+saveClientBtn.onclick = () => {
+  const name = clientNameInput.value.trim();
+  const desc = clientDescInput.value.trim();
+
+  if (!name) return alert('Client name required');
+
+  const acc = accounts.find(a => a.id === currentAccountId);
+  if (!acc) return;
+
+  acc.clients.push({
+    id: 'cli_' + Date.now(),
+    name,
+    desc
+  });
+
+  localStorage.setItem('neonote_accounts', JSON.stringify(accounts));
+  addClientModal.classList.add('hidden');
+  showTemporaryAccountTab(currentAccountId);
+};
+
+cancelAddClientBtn.onclick = () => {
+  addClientModal.classList.add('hidden');
+};
+
 
 function today() {
   const d = new Date();
@@ -239,42 +279,41 @@ saveAccountBtn.onclick = () => {
 
 function renderAccountsList() {
   accountsList.innerHTML = '';
+
   accounts.forEach(acc => {
     const div = document.createElement('div');
-    div.style.display = 'flex';
-    div.style.justifyContent = 'space-between';
-    div.style.alignItems = 'center';
-    div.style.margin = '4px 0';
+    div.className = 'promise';
+    div.style.cursor = 'pointer';
+
     div.innerHTML = `
-      <span>${acc.name}</span>
-      <div>
-        <button class="account-select" data-id="${acc.id}">Open</button>
-        <button class="account-delete" data-id="${acc.id}">❌</button>
+      <div class="promise-header">
+        <strong>${acc.name}</strong>
+        <button class="account-delete">❌</button>
       </div>
     `;
-    accountsList.appendChild(div);
-  });
 
-  accountsList.querySelectorAll('.account-select').forEach(btn => {
-    btn.onclick = e => {
-      const accId = e.target.dataset.id;
-      currentAccountId = accId;
+    // OPEN ACCOUNT OPTIONS
+    div.onclick = () => {
+      currentAccountId = acc.id;
+      document.getElementById('accountOptionsTitle').textContent = acc.name;
       accountsModal.classList.add('hidden');
-      showTemporaryAccountTab(accId);
+      accountOptionsModal.classList.remove('hidden');
     };
-  });
 
-  accountsList.querySelectorAll('.account-delete').forEach(btn => {
-    btn.onclick = e => {
-      const accId = e.target.dataset.id;
+    // DELETE ACCOUNT
+    div.querySelector('.account-delete').onclick = e => {
+      e.stopPropagation();
       if (confirm('Delete this account and all its clients?')) {
-        accounts = accounts.filter(a => a.id !== accId);
+        accounts = accounts.filter(a => a.id !== acc.id);
         localStorage.setItem('neonote_accounts', JSON.stringify(accounts));
         renderAccountsList();
       }
     };
+
+    accountsList.appendChild(div);
   });
 }
+
 
 
 closeBackupModal.onclick = () => {
@@ -488,28 +527,28 @@ function showTemporaryAccountTab(accId) {
   const acc = accounts.find(a => a.id === accId);
   if (!acc) return;
 
-  const existingTemp = document.querySelector('.tab.temp-account');
-  if (existingTemp) existingTemp.remove();
+  const existing = document.querySelector('.tab.temp-account');
+  if (existing) existing.remove();
 
-  const tabsContainer = document.querySelector('.tabs');
-  const allTab = tabsContainer.querySelector('[data-tab="all"]');
+  const tabs = document.querySelector('.tabs');
+  const allTab = tabs.querySelector('[data-tab="all"]');
 
-  const tempTab = document.createElement('button');
-  tempTab.className = 'tab temp-account active';
-  tempTab.textContent = acc.name;
-  tempTab.dataset.tab = 'account';
+  const tab = document.createElement('button');
+  tab.className = 'tab temp-account active';
+  tab.textContent = acc.name;
+  tab.dataset.tab = 'account';
 
-  tabsContainer.insertBefore(tempTab, allTab);
+  tabs.insertBefore(tab, allTab);
 
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  tempTab.classList.add('active');
+  tab.classList.add('active');
   currentTab = 'account';
 
   renderAccount(accId);
 
-  tempTab.onclick = () => {
+  tab.onclick = () => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    tempTab.classList.add('active');
+    tab.classList.add('active');
     currentTab = 'account';
     renderAccount(accId);
   };
