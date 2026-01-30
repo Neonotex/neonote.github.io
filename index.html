@@ -17,7 +17,7 @@
   <title>NeonoteX</title>
   <meta name="description" content="NeonoteX is a fully open-source, mobile-friendly app that helps debt collectors record client promises, organize notes, and keep track of follow-ups so nothing is forgotten." />
    <meta property="og:title" content="NeonoteX" />
-   <meta property="og:description" content="Neonote helps debt collectors stay organized, track commitments, and never miss a client promise — all in a simple, mobile-friendly interface." />
+   <meta property="og:description" content="NeonoteX is a fully open-source, mobile-friendly app that helps debt collectors record client promises, organize notes, and keep track of follow-ups so nothing is forgotten." />
    <meta property="og:type" content="website" />
    <meta property="og:url" content="https://yourusername.github.io/" />
    <meta property="og:image" content="icons/favicon-96x96.png" />
@@ -148,17 +148,326 @@
         <li>Restore requires the same password</li>
         <li>All data stays offline and secure</li>
       </ul>
+      
+      <h3>💾 Backup & Restore (Why this is IMPORTANT)</h3>
 
-      <h3>👤 Accounts Button</h3>
-      <p>
-        Accounts allow you to group multiple clients.
-      </p>
-      <ul>
-        <li>Create accounts (max 10 characters)</li>
-        <li>Add clients inside each account</li>
-        <li>View accounts as temporary tabs</li>
-        <li>Delete accounts or individual clients</li>
-      </ul>
+<p>
+NeonoteX is a <b>Progressive Web App (PWA)</b>. This means it runs inside your
+browser and stores all data <b>locally on your device</b>, not on the internet.
+</p>
+
+<p>
+Because of this, all of the following are saved inside your browser storage:
+</p>
+
+<ul>
+  <li>All promises</li>
+  <li>All accounts</li>
+  <li>All clients</li>
+</ul>
+
+<p>
+<b>WARNING:</b> If you clear your browser data, reset your browser,
+reinstall it, or switch devices, <b>ALL NeonoteX data will be permanently deleted</b>.
+</p>
+
+<h4>📦 Why You Need to Backup</h4>
+
+<p>
+Backup is your <b>only protection</b> against data loss.
+You should always create a backup before:
+</p>
+
+<ul>
+  <li>Clearing browser data or cache</li>
+  <li>Resetting your phone</li>
+  <li>Changing devices</li>
+  <li>Reinstalling the browser or app</li>
+</ul>
+
+<p>
+A backup file contains:
+</p>
+
+<ul>
+  <li>All promises</li>
+  <li>All accounts</li>
+  <li>All clients</li>
+</ul>
+
+<p>
+The backup file is <b>encrypted with a password (AES-256)</b>.
+No one can read or restore it without the correct password.
+</p>
+
+<h4>⬇️ How to Export a Backup</h4>
+
+<ol>
+  <li>Tap the <b>💾 Backup</b> button</li>
+  <li>Select <b>Export Backup</b></li>
+  <li>Set a password</li>
+  <li>Save the <code>.neonotex</code> file in a safe place</li>
+</ol>
+
+<p>
+<b>IMPORTANT:</b> Keep your password safe.
+If you forget it, the backup <b>cannot be restored</b>.
+</p>
+
+<h4>⬆️ How to Restore a Backup</h4>
+
+<ol>
+  <li>Tap the <b>💾 Backup</b> button</li>
+  <li>Select <b>Restore Backup</b></li>
+  <li>Choose your <code>.neonotex</code> backup file</li>
+  <li>Enter the backup password</li>
+</ol>
+
+<p>
+Once restored, <b>all promises, accounts, and clients</b>
+will return exactly as they were.
+</p>
+
+<h4>When doing backup and restore</h4>
+
+<ul>
+  <li>No internet required</li>
+  <li>No cloud storage</li>
+  <li>No servers involved</li>
+  <li>All backups are encrypted before saving</li>
+  <li>You fully control your data</li>
+</ul>
+
+
+<h3>👤 Accounts (Organize Clients & Notes)</h3>
+
+<p>
+The <b>Accounts</b> feature allows you to create multiple custom groups
+to organize your clients, promises, and notes in a clean and structured way.
+Instead of mixing everything together, accounts help you separate and manage
+your data more efficiently.
+</p>
+
+<h4>📌 Why You Need Accounts</h4>
+
+<p>
+As your data grows, managing many clients in one list can become confusing.
+Accounts solve this problem by letting you group related clients under a
+single category.
+</p>
+
+<p>
+This makes it easier to:
+</p>
+
+<ul>
+  <li>Track clients by location, area, or route</li>
+  <li>Separate work, personal, or side projects</li>
+  <li>Organize different types of notes</li>
+  <li>Quickly find the right information when needed</li>
+</ul>
+
+<h4>🗂️ How Accounts Work</h4>
+
+<p>
+Each account acts like a folder or category.
+Inside an account, you can store multiple clients, each with their own notes
+and records.
+</p>
+
+<ul>
+  <li>You can create unlimited accounts</li>
+  <li>Account names can be up to <b>10 characters</b></li>
+  <li>Each account can contain many clients</li>
+</ul>
+
+<h4>➕ Creating an Account</h4>
+
+<ol>
+  <li>Tap the <b>👤 Accounts</b> button</li>
+  <li>Tap <b>Create Account</b></li>
+  <li>Enter a short account name (max 10 characters)</li>
+  <li>Save the account</li>
+</ol>
+
+<p>
+Once created, the account will appear in your account list.
+</p>
+
+<h4>👥 Adding Clients Inside an Account</h4>
+
+<p>
+After selecting an account, you can add clients inside it.
+Each client can store notes, descriptions, or records.
+</p>
+
+<ol>
+  <li>Select an account</li>
+  <li>Tap <b>Add Client</b></li>
+  <li>Enter the client name</li>
+  <li>Add a description or notes</li>
+  <li>Save the client</li>
+</ol>
+
+<p>
+Clients are stored only inside their account, keeping everything organized.
+</p>
+
+<h4>📑 Viewing Accounts as Tabs</h4>
+
+<p>
+When you open an account, NeonoteX automatically creates a
+<b>temporary tab</b> at the top of the screen.
+</p>
+
+<p>
+This allows you to:
+</p>
+
+<ul>
+  <li>View only clients from that account</li>
+  <li>Switch back to Today, All, or Done anytime</li>
+  <li>Focus on one group without distractions</li>
+</ul>
+
+<p>
+The tab disappears when you reload the app, keeping the interface clean.
+</p>
+
+<h4>🧹 Managing & Deleting Data</h4>
+
+<ul>
+  <li>You can delete individual clients inside an account</li>
+  <li>You can delete an entire account (this removes all its clients)</li>
+  <li>Deletion always asks for confirmation to prevent mistakes</li>
+</ul>
+
+<h4>🌍 Real-World Usage Examples</h4>
+
+<p>
+Accounts are extremely flexible and can be used for many purposes, such as:
+</p>
+
+<ul>
+  <li>Creating accounts by <b>area or location</b> you travel to</li>
+  <li>Storing client lists per <b>route, zone, or barangay</b></li>
+  <li>Separating <b>work clients</b> and <b>personal notes</b></li>
+  <li>Using accounts as folders for <b>any kind of notes</b></li>
+  <li>Tracking projects, tasks, or reminders</li>
+</ul>
+
+<p>
+Because accounts are fully customizable, you are not limited to debt collection.
+This feature makes NeonoteX a <b>powerful general-purpose note organizer</b>.
+</p>
+
+<h4>✨ Why This Feature Is Powerful</h4>
+
+<ul>
+  <li>Keeps data clean and organized</li>
+  <li>Saves time when searching</li>
+  <li>Reduces mistakes and confusion</li>
+  <li>Works fully offline</li>
+  <li>Perfect for large or growing records</li>
+</ul>
+<h4>🧩 Account Structure (Simple Diagram)</h4>
+
+<p>
+Think of <b>Accounts</b> like folders, and <b>Clients</b> like files inside them:
+</p>
+
+<pre>
+👤 Accounts
+ ├─ 📁 AREA-A
+ │   ├─ 👤 Juan Dela Cruz
+ │   ├─ 👤 Maria Santos
+ │   └─ 👤 Pedro Reyes
+ │
+ ├─ 📁 AREA-B
+ │   ├─ 👤 Ana Lopez
+ │   └─ 👤 Mark Villanueva
+ │
+ └─ 📁 PERSONAL
+     ├─ 📝 Grocery Notes
+     └─ 📝 Reminders
+</pre>
+
+<p>
+Each account keeps its own list of clients or notes.
+Nothing gets mixed together.
+</p>
+
+<hr>
+
+<h4>🔄 How Accounts Appear in the App</h4>
+
+<pre>
+[ Today ] [ All ] [ Done ] [ AREA-A ]
+                          ↑
+                  Temporary Account Tab
+</pre>
+
+<p>
+When you open an account, NeonoteX creates a
+<b>temporary tab</b> for it.
+This lets you focus on one account at a time.
+</p>
+
+<p>
+Reloading the app removes the temporary tab to keep the interface clean.
+</p>
+
+<hr>
+
+<h4>🚀 First-Time Account Setup Guide</h4>
+
+<p>
+If this is your first time using NeonoteX, follow these steps
+to organize your data properly from the start.
+</p>
+
+<ol>
+  <li>
+    Tap the <b>👤 Accounts</b> button.
+  </li>
+  <li>
+    Create your first account.
+    <br>
+    Example:
+    <pre>AREA-A</pre>
+  </li>
+  <li>
+    Open the account you just created.
+  </li>
+  <li>
+    Tap <b>Add Client</b> and start adding names and notes.
+  </li>
+  <li>
+    Repeat the process for other areas or categories.
+  </li>
+</ol>
+
+<p>
+You can create as many accounts as you need,
+each representing a location, project, or category.
+</p>
+
+<hr>
+
+<h4>💡 Best Practice Tips</h4>
+
+<ul>
+  <li>Use short, clear account names (max 10 characters)</li>
+  <li>Create accounts based on areas you visit or routes you follow</li>
+  <li>Keep work and personal notes in separate accounts</li>
+  <li>Backup your data regularly</li>
+</ul>
+
+<p>
+Using accounts correctly from the beginning will make
+NeonoteX faster, cleaner, and easier to use as your data grows.
+</p>
+
 
       <h3>📅 Tabs (Today / All / Done)</h3>
       <ul>
