@@ -399,7 +399,7 @@ button.secondary {
   flex-direction: column;
   width: 90%;
   max-width: 320px;
-  height: 400px;
+  height: 600px;
   padding: 16px;
   box-sizing: border-box;
 }
