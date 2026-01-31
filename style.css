@@ -542,7 +542,7 @@ button.secondary {
 .slider {
   position: absolute;
   inset: 0;
-  background: #444;
+  background: #8B0000;
   border-radius: 4px;
   cursor: pointer;
 }
@@ -552,14 +552,14 @@ button.secondary {
   position: absolute;
   width: 20px;
   height: 20px;
-  background: #000;
+  background: var(--red);
   left: 2px;
   top: 2px;
   transition: transform 0.2s;
 }
 
 .switch input:checked + .slider {
-  background: #00ff9c;
+  background: var(--green);
 }
 
 .switch input:checked + .slider::before {
@@ -567,6 +567,24 @@ button.secondary {
 }
 
 .lock-modal {
-  background: #299d8b;
-  z-index: 99999;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; 
 }
+
+.lock-modal .modal-content {
+  pointer-events: auto;
+}
+
+.lock-modal {
+  pointer-events: none; 
+}
+
+.lock-modal .modal-content {
+  pointer-events: auto; 
+}
+

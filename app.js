@@ -79,7 +79,7 @@ async function registerBiometricCredential() {
   if (!window.PublicKeyCredential) return false;
 
   try {
-    await navigator.credentials.create({
+    const cred = await navigator.credentials.create({
       publicKey: {
         challenge: crypto.getRandomValues(new Uint8Array(32)),
         rp: { name: 'NeonoteX' },
@@ -97,7 +97,13 @@ async function registerBiometricCredential() {
       }
     });
 
+    const rawId = btoa(
+      String.fromCharCode(...new Uint8Array(cred.rawId))
+    );
+
+    localStorage.setItem('neonote_biometric_id', rawId);
     return true;
+
   } catch (err) {
     console.error('Biometric registration failed', err);
     return false;
@@ -748,13 +754,25 @@ biometricBtn.onclick = async () => {
   }
 
   try {
-    await navigator.credentials.get({
-      publicKey: {
-        challenge: crypto.getRandomValues(new Uint8Array(32)),
-        timeout: 60000,
-        userVerification: 'required'
-      }
-    });
+    const storedId = localStorage.getItem('neonote_biometric_id');
+if (!storedId) throw new Error('No biometric credential');
+
+const id = Uint8Array.from(
+  atob(storedId),
+  c => c.charCodeAt(0)
+);
+
+await navigator.credentials.get({
+  publicKey: {
+    challenge: crypto.getRandomValues(new Uint8Array(32)),
+    allowCredentials: [{
+      id,
+      type: 'public-key'
+    }],
+    userVerification: 'required',
+    timeout: 60000
+  }
+});
 
     appLockModal.classList.add('hidden');
     appPasswordInput.value = '';
