@@ -559,7 +559,7 @@ button.secondary {
 }
 
 .switch input:checked + .slider {
-  background: var(--green);
+  background: #00ff9c;
 }
 
 .switch input:checked + .slider::before {
@@ -567,6 +567,6 @@ button.secondary {
 }
 
 .lock-modal {
-  background: rgba(0,0,0,0.95);
+  background: #299d8b;
   z-index: 99999;
 }

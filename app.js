@@ -73,7 +73,36 @@ const biometricBtn = document.getElementById('biometricBtn');
 const APP_PASSWORD_KEY = 'neonote_app_password';
 const PASSWORD_ENABLED_KEY = 'neonote_password_enabled';
 const BIOMETRIC_ENABLED_KEY = 'neonote_biometric_enabled';
+const biometricToggle = document.getElementById('biometricToggle');
 
+async function registerBiometricCredential() {
+  if (!window.PublicKeyCredential) return false;
+
+  try {
+    await navigator.credentials.create({
+      publicKey: {
+        challenge: crypto.getRandomValues(new Uint8Array(32)),
+        rp: { name: 'NeonoteX' },
+        user: {
+          id: crypto.getRandomValues(new Uint8Array(16)),
+          name: 'neonote-user',
+          displayName: 'Neonote User'
+        },
+        pubKeyCredParams: [{ type: 'public-key', alg: -7 }],
+        authenticatorSelection: {
+          authenticatorAttachment: 'platform',
+          userVerification: 'required'
+        },
+        timeout: 60000
+      }
+    });
+
+    return true;
+  } catch (err) {
+    console.error('Biometric registration failed', err);
+    return false;
+  }
+}
 
 
 let searchClearTimer = null;
@@ -108,12 +137,30 @@ settingsBtn.onclick = () => {
   passwordToggle.checked =
     localStorage.getItem(PASSWORD_ENABLED_KEY) === 'true';
 
+  biometricToggle.checked =
+    localStorage.getItem(BIOMETRIC_ENABLED_KEY) === 'true';
+
   settingsModal.classList.remove('hidden');
 };
 
 closeSettingsBtn.onclick = () => {
   settingsModal.classList.add('hidden');
 };
+
+biometricToggle.onchange = async () => {
+  if (biometricToggle.checked) {
+    const ok = await registerBiometricCredential();
+    if (!ok) {
+      alert('Biometrics setup failed on this device');
+      biometricToggle.checked = false;
+      return;
+    }
+    localStorage.setItem(BIOMETRIC_ENABLED_KEY, 'true');
+  } else {
+    localStorage.removeItem(BIOMETRIC_ENABLED_KEY);
+  }
+};
+
 
 passwordToggle.onchange = () => {
   if (passwordToggle.checked) {
@@ -135,6 +182,7 @@ passwordToggle.onchange = () => {
     localStorage.removeItem(APP_PASSWORD_KEY);
     localStorage.setItem(PASSWORD_ENABLED_KEY, 'false');
     localStorage.removeItem(BIOMETRIC_ENABLED_KEY);
+    biometricToggle.checked = false;
   }
 };
 
@@ -695,12 +743,25 @@ unlockBtn.onclick = () => {
 
 biometricBtn.onclick = async () => {
   if (!window.PublicKeyCredential) {
-    alert('Biometrics not supported');
+    alert('Biometrics not supported on this device');
     return;
   }
 
-  localStorage.setItem(BIOMETRIC_ENABLED_KEY, 'true');
-  appLockModal.classList.add('hidden');
+  try {
+    await navigator.credentials.get({
+      publicKey: {
+        challenge: crypto.getRandomValues(new Uint8Array(32)),
+        timeout: 60000,
+        userVerification: 'required'
+      }
+    });
+
+    appLockModal.classList.add('hidden');
+    appPasswordInput.value = '';
+
+  } catch (err) {
+    alert('Biometric authentication failed');
+  }
 };
 
 
