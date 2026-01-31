@@ -210,8 +210,8 @@ button.secondary {
   outline: 2px solid #000;
   outline-offset: -6px;
   padding: 8px;
-  min-height: 520px;
-  max-height: 530px;
+  min-height: 485px;
+  max-height: 490px;
   overflow-y: auto;
   background: #154c45;
   border-radius: 8px; 
