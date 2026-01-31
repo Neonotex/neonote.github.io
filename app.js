@@ -73,42 +73,7 @@ const biometricBtn = document.getElementById('biometricBtn');
 const APP_PASSWORD_KEY = 'neonote_app_password';
 const PASSWORD_ENABLED_KEY = 'neonote_password_enabled';
 const BIOMETRIC_ENABLED_KEY = 'neonote_biometric_enabled';
-const biometricToggle = document.getElementById('biometricToggle');
 
-async function registerBiometricCredential() {
-  if (!window.PublicKeyCredential) return false;
-
-  try {
-    const cred = await navigator.credentials.create({
-      publicKey: {
-        challenge: crypto.getRandomValues(new Uint8Array(32)),
-        rp: { name: 'NeonoteX' },
-        user: {
-          id: crypto.getRandomValues(new Uint8Array(16)),
-          name: 'neonote-user',
-          displayName: 'Neonote User'
-        },
-        pubKeyCredParams: [{ type: 'public-key', alg: -7 }],
-        authenticatorSelection: {
-          authenticatorAttachment: 'platform',
-          userVerification: 'required'
-        },
-        timeout: 60000
-      }
-    });
-
-    const rawId = btoa(
-      String.fromCharCode(...new Uint8Array(cred.rawId))
-    );
-
-    localStorage.setItem('neonote_biometric_id', rawId);
-    return true;
-
-  } catch (err) {
-    console.error('Biometric registration failed', err);
-    return false;
-  }
-}
 
 
 let searchClearTimer = null;
@@ -143,28 +108,11 @@ settingsBtn.onclick = () => {
   passwordToggle.checked =
     localStorage.getItem(PASSWORD_ENABLED_KEY) === 'true';
 
-  biometricToggle.checked =
-    localStorage.getItem(BIOMETRIC_ENABLED_KEY) === 'true';
-
   settingsModal.classList.remove('hidden');
 };
 
 closeSettingsBtn.onclick = () => {
   settingsModal.classList.add('hidden');
-};
-
-biometricToggle.onchange = async () => {
-  if (biometricToggle.checked) {
-    const ok = await registerBiometricCredential();
-    if (!ok) {
-      alert('Biometrics setup failed on this device');
-      biometricToggle.checked = false;
-      return;
-    }
-    localStorage.setItem(BIOMETRIC_ENABLED_KEY, 'true');
-  } else {
-    localStorage.removeItem(BIOMETRIC_ENABLED_KEY);
-  }
 };
 
 passwordToggle.onchange = () => {
@@ -187,7 +135,6 @@ passwordToggle.onchange = () => {
     localStorage.removeItem(APP_PASSWORD_KEY);
     localStorage.setItem(PASSWORD_ENABLED_KEY, 'false');
     localStorage.removeItem(BIOMETRIC_ENABLED_KEY);
-    biometricToggle.checked = false;
   }
 };
 
@@ -748,32 +695,12 @@ unlockBtn.onclick = () => {
 
 biometricBtn.onclick = async () => {
   if (!window.PublicKeyCredential) {
-    alert('Biometrics not supported on this device');
+    alert('Biometrics not supported');
     return;
   }
 
-  try {
-    const storedId = localStorage.getItem('neonote_biometric_id');
-    if (!storedId) throw new Error('No biometric credential');
-
-    const id = Uint8Array.from(atob(storedId), c => c.charCodeAt(0));
-
-    await navigator.credentials.get({
-      publicKey: {
-        challenge: crypto.getRandomValues(new Uint8Array(32)),
-        allowCredentials: [{ id, type: 'public-key' }],
-        userVerification: 'required',
-        timeout: 60000
-      }
-    });
-
-    appLockModal.classList.add('hidden');
-    appPasswordInput.value = '';
-
-  } catch (err) {
-    console.error(err);
-    alert('Biometric authentication failed');
-  }
+  localStorage.setItem(BIOMETRIC_ENABLED_KEY, 'true');
+  appLockModal.classList.add('hidden');
 };
 
 
@@ -869,15 +796,21 @@ let hidden = false;
 hideBtn.onclick = () => {
   hidden = !hidden;
 
-  const floatingButtons = document.querySelectorAll('.floating-btn');
-  floatingButtons.forEach(btn => {
-    if (btn.id !== 'hideBtn') {
-      btn.style.display = hidden ? 'none' : 'block';
-    }
-  });
+  const floatingButtons = document.querySelectorAll('.floating-btn:not(.hide-btn)');
 
-  hideBtn.style.transform = hidden ? 'translateX(-50%)' : 'translateX(0)';
-  hideBtn.textContent = hidden ? '❮' : '❯';
+  if (hidden) {
+    floatingButtons.forEach(btn => btn.classList.add('slide-out'));
+
+    hideBtn.classList.add('slide-right');
+    hideBtn.classList.remove('slide-left');
+    hideBtn.textContent = '❮'; 
+  } else {
+
+    floatingButtons.forEach(btn => btn.classList.remove('slide-out'));
+    hideBtn.classList.add('slide-left');
+    hideBtn.classList.remove('slide-right');
+    hideBtn.textContent = '❯'; 
+  }
 };
 
 

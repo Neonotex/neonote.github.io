@@ -542,7 +542,7 @@ button.secondary {
 .slider {
   position: absolute;
   inset: 0;
-  background: var(--light);
+  background: #660000;
   border-radius: 4px;
   cursor: pointer;
 }
@@ -567,24 +567,6 @@ button.secondary {
 }
 
 .lock-modal {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0,0,0,0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999; 
+  background: rgba(0,0,0,0.95);
+  z-index: 99999;
 }
-
-.lock-modal .modal-content {
-  pointer-events: auto;
-}
-
-.lock-modal {
-  pointer-events: none; 
-}
-
-.lock-modal .modal-content {
-  pointer-events: auto; 
-}
-
