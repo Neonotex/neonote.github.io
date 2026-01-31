@@ -59,8 +59,21 @@ const homeBtn = document.getElementById('homeBtn');
 const helpBtn = document.getElementById('helpBtn');
 const helpModal = document.getElementById('helpModal');
 const closeHelpModal = document.getElementById('closeHelpModal');
-
 const MAX_DONE = 15;
+const settingsBtn = document.getElementById('settingsBtn');
+const settingsModal = document.getElementById('settingsModal');
+const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+const passwordToggle = document.getElementById('passwordToggle');
+
+const appLockModal = document.getElementById('appLockModal');
+const appPasswordInput = document.getElementById('appPasswordInput');
+const unlockBtn = document.getElementById('unlockBtn');
+const biometricBtn = document.getElementById('biometricBtn');
+
+const APP_PASSWORD_KEY = 'neonote_app_password';
+const PASSWORD_ENABLED_KEY = 'neonote_password_enabled';
+const BIOMETRIC_ENABLED_KEY = 'neonote_biometric_enabled';
+
 
 
 let searchClearTimer = null;
@@ -90,6 +103,40 @@ function markOverduePromisesDone() {
 
   if (changed) save();
 }
+
+settingsBtn.onclick = () => {
+  passwordToggle.checked =
+    localStorage.getItem(PASSWORD_ENABLED_KEY) === 'true';
+
+  settingsModal.classList.remove('hidden');
+};
+
+closeSettingsBtn.onclick = () => {
+  settingsModal.classList.add('hidden');
+};
+
+passwordToggle.onchange = () => {
+  if (passwordToggle.checked) {
+    settingsModal.classList.add('hidden');
+    passwordModalTitle.textContent = 'Create App Password';
+    passwordInput.value = '';
+    passwordModal.classList.remove('hidden');
+
+    passwordConfirmBtn.onclick = () => {
+      const pw = passwordInput.value.trim();
+      if (!pw) return;
+
+      localStorage.setItem(APP_PASSWORD_KEY, pw);
+      localStorage.setItem(PASSWORD_ENABLED_KEY, 'true');
+
+      passwordModal.classList.add('hidden');
+    };
+  } else {
+    localStorage.removeItem(APP_PASSWORD_KEY);
+    localStorage.setItem(PASSWORD_ENABLED_KEY, 'false');
+    localStorage.removeItem(BIOMETRIC_ENABLED_KEY);
+  }
+};
 
 
 addClientBtn.onclick = () => {
@@ -624,6 +671,38 @@ dismissBtn.onclick = () => {
 if (isAppInstalled()) {
   installBanner.classList.add('hidden');
 }
+
+(function enforceAppLock() {
+  const enabled =
+    localStorage.getItem(PASSWORD_ENABLED_KEY) === 'true';
+
+  if (!enabled) return;
+
+  appLockModal.classList.remove('hidden');
+
+  if (localStorage.getItem(BIOMETRIC_ENABLED_KEY) === 'true') {
+    biometricBtn.classList.remove('hidden');
+  }
+})();
+
+unlockBtn.onclick = () => {
+  const saved = localStorage.getItem(APP_PASSWORD_KEY);
+  if (appPasswordInput.value === saved) {
+    appLockModal.classList.add('hidden');
+    appPasswordInput.value = '';
+  }
+};
+
+biometricBtn.onclick = async () => {
+  if (!window.PublicKeyCredential) {
+    alert('Biometrics not supported');
+    return;
+  }
+
+  localStorage.setItem(BIOMETRIC_ENABLED_KEY, 'true');
+  appLockModal.classList.add('hidden');
+};
+
 
 markOverduePromisesDone();
 render();
