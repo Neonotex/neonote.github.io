@@ -658,8 +658,9 @@ button.secondary {
 
 .promise-header.all-row {
   display: grid; 
-  grid-template-columns: 2fr 1fr;
-  align-items: center;
+  grid-template-columns: 1.8fr 1.2fr;
+  align-items: center
+  gap: 8px
 }
 
 .all-name-box, .all-date-box {
@@ -670,4 +671,33 @@ button.secondary {
 
 .all-date-box {
   background-color: gold;
+  text-align: center;
+  font-weight: bold;
+  white-space: nowrap;  
+  min-width: 110px;     
+}
+.all-name-box {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.promise-scroll {
+  overflow-y: auto;
+  max-height: 100%;
+  padding-right: 4px;
+}
+
+.promise-scroll::-webkit-scrollbar {
+  width: 10px;
+}
+
+.promise-scroll::-webkit-scrollbar-track {
+  background: #000;           
+}
+
+.promise-scroll::-webkit-scrollbar-thumb {
+  background: var(--green);     
+  border: 2px solid #000;   
+  box-sizing: border-box;
 }
