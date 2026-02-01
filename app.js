@@ -727,18 +727,29 @@ searchInput.oninput = () => {
   }
 
   else {
-    const res = promises.filter(p =>
-      p.name.toLowerCase().includes(q)
-    );
-    render(res, currentTab);
-  }
+  const res = promises.filter(p => {
+    const nameMatch = p.name.toLowerCase().includes(q);
 
+    const dateMatch =
+      currentTab === 'all' &&
+      p.date.includes(q); 
+
+    return nameMatch || dateMatch;
+  });
+
+  render(res, currentTab);
+}
+
+
+if (currentTab !== 'all') {
   searchClearTimer = setTimeout(() => {
     searchInput.value = '';
     currentTab === 'account'
       ? renderAccount(currentAccountId)
       : render();
   }, 10000);
+}
+
 };
 
 clearSearchBtn.onclick = () => {
