@@ -318,17 +318,6 @@ if (mode === 'all') {
 `;
 
 
-      <div class="promise-details">
-        <p>Date: ${p.date}</p>
-        <p>${p.desc}</p>
-        ${
-          !p.done && mode !== 'done'
-            ? '<button class="move">Move Promise</button>'
-            : ''
-        }
-      </div>
-    `;
-
     if (mode === 'today') {
       div.querySelector('.checkbox').onclick = e => {
   e.stopPropagation();
