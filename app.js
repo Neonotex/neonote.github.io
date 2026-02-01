@@ -254,9 +254,9 @@ function render(list = promises, mode = currentTab) {
   todayContainer.innerHTML = '';
 if (mode === 'all') {
   todayContainer.innerHTML = `
-    <div class="all-header">
-      <div>Name</div>
-      <div style="text-align:right;">PTP</div>
+    <div class="all-table">
+      <div class="all-cell all-head">NAME</div>
+      <div class="all-cell all-head ptp">PTP</div>
     </div>
   `;
 }
@@ -290,19 +290,32 @@ if (mode === 'all') {
     if (p.done) div.classList.add('done-visible');
 
     div.innerHTML = `
-<div class="promise-header ${mode === 'all' ? 'all-row' : ''}">
   ${
     mode === 'all'
       ? `
-        <div class="all-name">${p.name}</div>
-        <div class="all-ptp">${p.date}</div>
+        <div class="all-row">
+          <div class="all-cell name">${p.name}</div>
+          <div class="all-cell ptp">${p.date}</div>
+        </div>
       `
       : `
-        <strong>${p.name}</strong>
-        ${mode === 'today' ? '<div class="checkbox"></div>' : ''}
+        <div class="promise-header">
+          <strong>${p.name}</strong>
+          ${mode === 'today' ? '<div class="checkbox"></div>' : ''}
+        </div>
       `
   }
-</div>
+
+  <div class="promise-details">
+    <p>Date: ${p.date}</p>
+    <p>${p.desc}</p>
+    ${
+      !p.done && mode !== 'done'
+        ? '<button class="move">Move Promise</button>'
+        : ''
+    }
+  </div>
+`;
 
 
       <div class="promise-details">

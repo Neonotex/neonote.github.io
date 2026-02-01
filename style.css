@@ -644,3 +644,41 @@ button.secondary {
   color: #ffd966;
 }
 
+
+
+.all-table {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  border: 2px solid var(--green);
+  margin-bottom: 6px;
+}
+
+.all-row {
+  display: contents; 
+}
+
+.all-cell {
+  padding: 8px;
+  border-bottom: 1px dashed var(--green);
+  background: #123d37;
+  font-size: 1rem;
+}
+
+
+.all-cell.ptp {
+  border-left: 2px solid var(--green);
+  text-align: right;
+  color: #ffd966;
+}
+
+.all-head {
+  font-weight: bold;
+  background: #000;
+  color: var(--green);
+  border-bottom: 2px solid var(--green);
+}
+
+.all-head.ptp {
+  text-align: right;
+}
+
