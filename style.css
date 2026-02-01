@@ -626,7 +626,7 @@ button.secondary {
 
 .all-header > div:first-child {
   padding: 6px 10px;
-  border: 1px solid #ccc;
+  border: 2px solid #000;
   border-radius: 5px;
   background: #123d37;  
   color: #a1e5dc;
@@ -636,7 +636,7 @@ button.secondary {
 
 .all-header > div:last-child {
   padding: 6px 10px;
-  border: 1px solid #ccc;
+  border: 2px solid #000;
   border-radius: 5px;
   background: var(--green);   
   color: #a1e5dc;
