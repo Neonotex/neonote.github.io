@@ -293,8 +293,8 @@ if (mode === 'all') {
   ${
     mode === 'all'
       ? `
-        <div class="all-name">${p.name}</div>
-        <div class="all-ptp">${p.date}</div>
+        <div class="all-name-box">${p.name}</div>
+        <div class="all-date-box">${p.date}</div>
       `
       : `
         <strong>${p.name}</strong>
@@ -303,17 +303,16 @@ if (mode === 'all') {
   }
 </div>
 
+<div class="promise-details">
+  <p>${p.desc}</p>
+  ${
+    !p.done && mode !== 'done'
+      ? '<button class="move">Move Promise</button>'
+      : ''
+  }
+</div>
+`;
 
-      <div class="promise-details">
-        <p>Date: ${p.date}</p>
-        <p>${p.desc}</p>
-        ${
-          !p.done && mode !== 'done'
-            ? '<button class="move">Move Promise</button>'
-            : ''
-        }
-      </div>
-    `;
 
     if (mode === 'today') {
       div.querySelector('.checkbox').onclick = e => {

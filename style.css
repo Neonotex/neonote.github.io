@@ -628,10 +628,9 @@ button.secondary {
 }
 
 .all-row {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 8px;
-  align-items: center;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 5px;
 }
 
 .all-name {
@@ -661,4 +660,14 @@ button.secondary {
   display: grid; 
   grid-template-columns: 2fr 1fr;
   align-items: center;
+}
+
+.all-name-box, .all-date-box {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.all-date-box {
+  background-color: gold;
 }
