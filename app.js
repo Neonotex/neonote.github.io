@@ -152,9 +152,12 @@ addClientBtn.onclick = () => {
 
 viewAccountBtn.onclick = () => {
   accountOptionsModal.classList.add('hidden');
+
+  currentTab = 'account';
+  document.getElementById('allStickyHeader').classList.add('hidden');
+
   showTemporaryAccountTab(currentAccountId);
   updateCounts();
-
 };
 
 cancelAccountOptionsBtn.onclick = () => {
