@@ -3,7 +3,7 @@
 **Developer:** KevinDGreat  
 
 ### NeonoteX 
-is an offline note-taking app designed for efficient task management. Originally built for debt collectors, it allows users to create customized notes, schedule tasks, and track commitments with ease.
+is an open-source offline note-taking app designed for efficient task management. Originally built for debt collectors, it allows users to create customized notes, schedule tasks, and track commitments with ease.
 
 For debt collectors, NeonoteX helps record and monitor promises and schedule follow-ups with just a few taps. Beyond debt collection, the app can be used for a wide range of task-management needs, making it a flexible and powerful productivity tool.
 
