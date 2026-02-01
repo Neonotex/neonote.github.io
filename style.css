@@ -613,3 +613,34 @@ button.secondary {
   margin-left: 6px;
 }
 
+
+.all-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  padding: 6px 8px;
+  margin-bottom: 6px;
+  font-weight: bold;
+  border-bottom: 2px dashed var(--green);
+  color: var(--green);
+}
+
+.all-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.all-name {
+  color: #a1e5dc;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.all-ptp {
+  text-align: right;
+  font-size: 0.9em;
+  color: #ffd966;
+}
+

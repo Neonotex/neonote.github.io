@@ -252,6 +252,14 @@ async function getKey(password, salt) {
 
 function render(list = promises, mode = currentTab) {
   todayContainer.innerHTML = '';
+if (mode === 'all') {
+  todayContainer.innerHTML = `
+    <div class="all-header">
+      <div>Name</div>
+      <div style="text-align:right;">PTP</div>
+    </div>
+  `;
+}
 
   let items = [];
 
@@ -282,21 +290,20 @@ function render(list = promises, mode = currentTab) {
     if (p.done) div.classList.add('done-visible');
 
     div.innerHTML = `
-<div class="promise-header">
-  <strong>
-    ${p.name}
-    ${
-      mode === 'all'
-        ? ` <span class="ptp-date">[PTP: ${p.date}]</span>`
-        : ''
-    }
-  </strong>
+<div class="promise-header ${mode === 'all' ? 'all-row' : ''}">
   ${
-    mode === 'today'
-      ? '<div class="checkbox"></div>'
-      : ''
+    mode === 'all'
+      ? `
+        <div class="all-name">${p.name}</div>
+        <div class="all-ptp">${p.date}</div>
+      `
+      : `
+        <strong>${p.name}</strong>
+        ${mode === 'today' ? '<div class="checkbox"></div>' : ''}
+      `
   }
 </div>
+
 
       <div class="promise-details">
         <p>Date: ${p.date}</p>
