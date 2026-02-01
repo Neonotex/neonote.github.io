@@ -619,7 +619,7 @@ button.secondary {
 
 .all-header {
   display: grid;
-  grid-template-columns: 1.8fr 1.2fr; 
+  grid-template-columns: 1.9fr 1.1fr; 
   gap: 8px;
   margin-bottom: 6px;
 }
@@ -638,11 +638,15 @@ button.secondary {
   padding: 6px 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  background: gold;   
-  color: #000;
+  background: var(--green);   
+  color: #a1e5dc;
   font-weight: bold;
   text-align: center;         
   white-space: nowrap;
+}
+
+#allStickyHeader > div:last-child {
+  text-align: center !important;
 }
 
 
@@ -662,7 +666,7 @@ button.secondary {
 .all-ptp {
   text-align: right;
   font-size: 0.9em;
-  color: #ffd966;
+  color: var(--green);
 }
 
 .promise-scroll {
@@ -677,7 +681,7 @@ button.secondary {
 
 .promise-header.all-row {
   display: grid; 
-  grid-template-columns: 1.8fr 1.2fr;
+  grid-template-columns: 1.9fr 1.1fr;
   align-items: center
   gap: 8px
 }
@@ -689,7 +693,7 @@ button.secondary {
 }
 
 .all-date-box {
-  background-color: gold;
+  background-color: var(--green);
   text-align: center;
   font-weight: bold;
   white-space: nowrap;  
