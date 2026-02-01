@@ -212,11 +212,14 @@ button.secondary {
   padding: 8px;
   min-height: 485px;
   max-height: 490px;
-  overflow-y: auto;
   background: #154c45;
-  border-radius: 8px; 
+  border-radius: 8px;
   position: relative;
+
+  display: flex;
+  flex-direction: column;
 }
+
 
 @media (max-height: 500px) {
   #promiseSection {
@@ -624,9 +627,10 @@ button.secondary {
   color: var(--green);
 }
 
+.all-header,
 .all-row {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 3fr 1fr;
   gap: 8px;
   align-items: center;
 }
@@ -644,3 +648,12 @@ button.secondary {
   color: #ffd966;
 }
 
+.promise-scroll {
+  overflow-y: auto;
+  max-height: 100%;
+  padding-right: 2px;
+}
+
+.hidden {
+  display: none !important;
+}

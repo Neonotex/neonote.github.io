@@ -252,13 +252,12 @@ async function getKey(password, salt) {
 
 function render(list = promises, mode = currentTab) {
   todayContainer.innerHTML = '';
+const allHeader = document.getElementById('allStickyHeader');
+
 if (mode === 'all') {
-  todayContainer.innerHTML = `
-    <div class="all-header">
-      <div>Name</div>
-      <div style="text-align:right;">PTP</div>
-    </div>
-  `;
+  allHeader.classList.remove('hidden');
+} else {
+  allHeader.classList.add('hidden');
 }
 
   let items = [];
