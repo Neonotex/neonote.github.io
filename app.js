@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+  loadUpdateDetails();
 
 document.querySelectorAll('.tab').forEach(tab => {
   tab.onclick = () => {
@@ -19,6 +20,49 @@ if (sourceCodeBtn) {
   };
 }
 
+const updateBanner = document.getElementById('updateBanner');
+const applyUpdateBtn = document.getElementById('applyUpdate');
+
+const viewUpdateDetailsBtn = document.getElementById('viewUpdateDetails');
+
+const updateDetailsModal = document.getElementById('updateDetailsModal');
+const closeUpdateDetails = document.getElementById('closeUpdateDetails');
+
+
+let newWorker = null;
+let updateApproved = false;
+
+navigator.serviceWorker.addEventListener('controllerchange', () => {
+  if (updateApproved) {
+    window.location.reload();
+  }
+});
+
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js').then(reg => {
+
+    setInterval(() => {
+      reg.update();
+    }, 60 * 1000); 
+
+    if (reg.waiting) {
+      newWorker = reg.waiting;
+      updateBanner.classList.remove('hidden');
+    }
+
+    reg.addEventListener('updatefound', () => {
+      const worker = reg.installing;
+
+      worker.addEventListener('statechange', () => {
+        if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+          newWorker = worker;
+          updateBanner.classList.remove('hidden');
+        }
+      });
+    });
+  });
+}
 
 const todayContainer = document.getElementById('todayContainer');
 const countTodayEl = document.getElementById('countToday');
@@ -79,7 +123,12 @@ const PASSWORD_ENABLED_KEY = 'neonote_password_enabled';
 const BIOMETRIC_ENABLED_KEY = 'neonote_biometric_enabled';
 const NAME_HISTORY_KEY = 'neonote_name_history';
 const nameSuggestions = document.getElementById('nameSuggestions');
+const noNoteModal = document.getElementById('noNoteModal');
+const closeNoNoteModal = document.getElementById('closeNoNoteModal');
 
+closeNoNoteModal.onclick = () => {
+  noNoteModal.classList.add('hidden');
+};
 
 
 let searchClearTimer = null;
@@ -92,6 +141,14 @@ const description = document.getElementById('description');
 clientName.addEventListener('input', () => {
   showNameSuggestions(clientName.value.trim());
 });
+
+const NOTES_KEY = 'neonote_notes';
+const NOTE_LIMIT = 20000;
+const NOTE_TITLE_LIMIT = 100;
+
+
+let notes = JSON.parse(localStorage.getItem(NOTES_KEY) || '[]');
+let currentNoteId = null;
 
 
 let editIndex = null;
@@ -556,7 +613,10 @@ passwordConfirmBtn.onclick = async () => {
       created: Date.now(),
       promises,
       accounts,
-      nameHistory: getNameHistory()
+      nameHistory: getNameHistory(),
+      notes,
+      collectionData,     
+      quotaData           
     });
 
     const encrypted = await crypto.subtle.encrypt(
@@ -590,16 +650,23 @@ passwordConfirmBtn.onclick = async () => {
       const parsed = JSON.parse(new TextDecoder().decode(decrypted));
 promises = parsed.promises || [];
 accounts = parsed.accounts || [];
+notes = parsed.notes || [];
+collectionData = parsed.collectionData || [];
+quotaData = parsed.quotaData || {};
+localStorage.setItem('collectionData', JSON.stringify(collectionData));
+localStorage.setItem('collectionQuotaData', JSON.stringify(quotaData));
+localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
 if (parsed.nameHistory) {
-  localStorage.setItem(NAME_HISTORY_KEY, JSON.stringify(parsed.nameHistory)); 
+  localStorage.setItem(NAME_HISTORY_KEY, JSON.stringify(parsed.nameHistory));
 }
-
 save();  
 localStorage.setItem('neonote_accounts', JSON.stringify(accounts)); 
 
 markOverduePromisesDone();
 render();
 updateCounts();
+restoreCollectionUI();  
+renderCollectionNames();
 
 backupModal.classList.add('hidden');
 showNotification('Backup restored successfully');
@@ -938,9 +1005,574 @@ hideBtn.onclick = () => {
   }
 };
 
+applyUpdateBtn.onclick = () => {
+  if (!newWorker) return;
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('service-worker.js');
+  updateApproved = true;
+  newWorker.postMessage({ action: 'SKIP_WAITING' });
+};
+
+
+async function loadUpdateDetails() {
+  try {
+    const res = await fetch('./update-info.json', {
+      cache: 'no-store'
+    });
+
+    if (!res.ok) throw new Error('Failed to load update info');
+
+    const data = await res.json();
+
+    document.getElementById('updateTitle').textContent =
+      `Update ${data.version}`;
+
+    const list = document.getElementById('updateDetailsList');
+    list.innerHTML = '';
+
+    data.details.forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = item;
+      list.appendChild(li);
+    });
+
+  } catch (e) {
+    document.getElementById('updateDetailsList').innerHTML =
+      '<li>Unable to load update details</li>';
+  }
 }
 
+
+viewUpdateDetailsBtn.onclick = () => {
+  loadUpdateDetails(); 
+  updateDetailsModal.classList.remove('hidden');
+};
+
+closeUpdateDetails.onclick = () => {
+  updateDetailsModal.classList.add('hidden');
+};
+
+const notepadBtn = document.getElementById('notepadBtn');
+const notepadModal = document.getElementById('notepadModal');
+const closeNotepad = document.getElementById('closeNotepad');
+
+const noteTitle = document.getElementById('noteTitle');
+const noteContent = document.getElementById('noteContent');
+const charCount = document.getElementById('charCount');
+
+const notesList = document.getElementById('notesList');
+const addNoteBtn = document.getElementById('addNoteBtn');
+const toggleNotes = document.getElementById('toggleNotes');
+const sidebar = document.querySelector('.notepad-sidebar');
+
+function saveNotes() {
+  localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
+}
+
+function renderNotesList() {
+  notesList.innerHTML = '';
+
+  if (!notes.length) {
+    const empty = document.createElement('p');
+    empty.className = 'empty-state';
+    empty.textContent = 'No notes yet. Add one!';
+    notesList.appendChild(empty);
+    return;
+  }
+
+  notes.forEach(n => {
+    const div = document.createElement('div');
+    div.className = 'promise';
+    div.style.cursor = 'pointer';
+
+    div.innerHTML = `
+      <div class="promise-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <strong>${n.title || 'Untitled'}</strong>
+        <button class="delete-client" style="
+          width: 32px;
+          height: 32px;
+          min-width: 32px;
+          min-height: 32px;
+          max-width: 32px;
+          max-height: 32px;
+          padding: 0;
+          margin: 0;
+          font-size: 18px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        ">❌</button>
+      </div>
+    `;
+
+    div.querySelector('.promise-header').onclick = e => {
+      if (e.target.classList.contains('delete-client')) return;
+      loadNote(n.id);
+    };
+
+    div.querySelector('.delete-client').onclick = e => {
+      e.stopPropagation();
+
+      showConfirm('Are you sure you want to delete this note?', () => {
+        notes = notes.filter(x => x.id !== n.id);
+        if (currentNoteId === n.id) clearEditor();
+        saveNotes();
+        renderNotesList();
+      });
+    };
+
+    notesList.appendChild(div);
+  });
+}
+
+
+function loadNote(id) {
+  const n = notes.find(x => x.id === id);
+  if (!n) return;
+
+  currentNoteId = id;
+  noteTitle.value = n.title;
+  noteContent.value = n.content;
+  updateCharCount();
+}
+
+function clearEditor() {
+  currentNoteId = null;
+  noteTitle.value = '';
+  noteContent.value = '';
+  updateCharCount();
+}
+
+function updateCharCount() {
+  const len = noteContent.value.length;
+  charCount.textContent = `${len} / ${NOTE_LIMIT}`;
+
+  if (len > NOTE_LIMIT) {
+    noteContent.value = noteContent.value.slice(0, NOTE_LIMIT);
+  }
+}
+
+
+noteTitle.oninput = (e) => {
+  if (!currentNoteId) {
+    noNoteModal.classList.remove('hidden');
+    e.target.value = '';
+    return;
+  }
+
+  if (e.target.value.length > NOTE_TITLE_LIMIT) {
+    e.target.value = e.target.value.slice(0, NOTE_TITLE_LIMIT);
+  }
+
+  const n = notes.find(x => x.id === currentNoteId);
+  if (!n) return;
+
+  n.title = e.target.value;
+  saveNotes();
+};
+
+noteContent.oninput = (e) => {
+  if (!currentNoteId) {
+    noNoteModal.classList.remove('hidden');
+    e.target.value = '';
+    updateCharCount();
+    return;
+  }
+
+  updateCharCount();
+
+  const n = notes.find(x => x.id === currentNoteId);
+  if (!n) return;
+
+  n.content = e.target.value.slice(0, NOTE_LIMIT);
+  saveNotes();
+};
+
+
+addNoteBtn.onclick = () => {
+  const n = {
+    id: 'note_' + Date.now(),
+    title: '',
+    content: ''
+  };
+  notes.unshift(n);
+  saveNotes();
+  renderNotesList();
+  loadNote(n.id);
+};
+
+toggleNotes.onclick = () => {
+  sidebar.classList.toggle('collapsed');
+  toggleNotes.textContent =
+    sidebar.classList.contains('collapsed') ? '❯' : '❮';
+  addNoteBtn.classList.toggle('hidden');
+};
+
+notepadBtn.onclick = () => {
+  notepadModal.classList.remove('hidden');
+  renderNotesList();
+};
+
+closeNotepad.onclick = () => {
+  notepadModal.classList.add('hidden');
+};
+
+const collectionBtn = document.getElementById('collectionBtn');
+const collectionModal = document.getElementById('collectionModal');
+const closeCollectionModal = document.getElementById('closeCollectionModal');
+const copyCollectionBtn = document.getElementById('copyCollectionBtn');
+
+
+const expandPanelBtn = document.getElementById('expandPanelBtn');
+const panelContent = document.getElementById('panelContent');
+
+const collectionSearch = document.getElementById('collectionSearch');
+const collectionName = document.getElementById('collectionName');
+const collectionBalance = document.getElementById('collectionBalance');
+const collectionDate = document.getElementById('collectionDate');
+const collectionLastPaid = document.getElementById('collectionLastPaid');
+const collectionPayment = document.getElementById('collectionPayment');
+const addCollectionPayment = document.getElementById('addCollectionPayment');
+
+const collectionMonth = document.getElementById('collectionMonth');
+const collectionQuota = document.getElementById('collectionQuota');
+const collectionTotalBalance = document.getElementById('collectionTotalBalance');
+const collectionRunning = document.getElementById('collectionRunning');
+const saveCollectionQuota = document.getElementById('saveCollectionQuota');
+const collectionPercent = document.getElementById('collectionPercent');
+const collectionHistoryBtn = document.getElementById('collectionHistoryBtn');
+
+const collectionNamesList = document.getElementById('collectionNamesList');
+const collectionTabs = document.querySelectorAll('.collection-tab');
+
+let collectionData = JSON.parse(localStorage.getItem('collectionData') || '[]');
+let currentCollectionTab = '3NM';
+let quotaData = JSON.parse(localStorage.getItem('collectionQuotaData') || '{}');
+const COLLECTION_TAB_TITLES = {
+  '3NM': '3 Months Non-moving Accs',
+  '6NM': '6 Months Non-moving Accs',
+  '9NM': '9 Months Non-moving Accs',
+  '12NM': '12 Months Non-moving Accs',
+  'Moving': 'Moving Accounts',
+  'Total': 'All Accounts'
+};
+let collectionNamesVisible = false;
+
+collectionBtn.onclick = () => collectionModal.classList.remove('hidden');
+closeCollectionModal.onclick = () => collectionModal.classList.add('hidden');
+
+const infoBlock = document.getElementById('collectionInfoBlock');
+expandPanelBtn.onclick = () => {
+  const expanded = panelContent.classList.toggle('visible');
+
+  infoBlock.classList.toggle('hidden', expanded);
+
+  expandPanelBtn.textContent = expanded ? '>' : '<';
+};
+
+
+saveCollectionQuota.onclick = () => {
+  const month = collectionMonth.value;
+  const quota = Number(collectionQuota.value || 0);
+
+  quotaData[month] = {
+    quota,
+    balance: quota - (quotaData[month]?.running || 0),
+    running: quotaData[month]?.running || 0
+  };
+
+  localStorage.setItem(
+    'collectionQuotaData',
+    JSON.stringify(quotaData)
+  );
+
+  collectionTotalBalance.value = quotaData[month].balance;
+  collectionRunning.value = quotaData[month].running;
+
+  updateCollectionPercentage(month);
+};
+
+addCollectionPayment.onclick = () => {
+  const name = collectionName.value.trim();
+  const balance = Number(collectionBalance.value || 0);
+  const date = collectionDate.value;
+  const payment = Number(collectionPayment.value || 0);
+
+  if (!name || !date || isNaN(payment) || payment < 0) return;
+
+  let record = collectionData.find(r => r.name === name);
+
+if (!record) {
+  record = {
+    name,
+    lastPaid: date,
+    balance: balance,          
+    payments: []
+  };
+  collectionData.push(record);
+}
+
+  record.lastPaid = date;
+  record.payments.push({ amount: payment, date });
+  record.balance -= payment;
+if (record.balance < 0) record.balance = 0;
+
+  const month = collectionMonth.value;
+  if (quotaData[month]) {
+    quotaData[month].balance -= payment;
+    quotaData[month].running += payment;
+  }
+
+  localStorage.setItem('collectionData', JSON.stringify(collectionData));
+  localStorage.setItem('collectionQuotaData', JSON.stringify(quotaData));
+  collectionTotalBalance.value = quotaData[month]?.balance || 0;
+  collectionRunning.value = quotaData[month]?.running || 0;
+  updateCollectionPercentage(month);
+
+    collectionNamesVisible = false;
+  updateTabCounts();
+  collectionNamesList.innerHTML = '';
+
+collectionName.value = '';
+collectionBalance.value = '';
+collectionPayment.value = '';
+collectionLastPaid.value = '';
+const today = new Date().toISOString().split('T')[0];
+collectionDate.value = today;
+collectionName.focus();
+
+};
+
+function renderCollectionNames(filter = '') {
+  updateTabCounts();
+  if (!collectionNamesVisible) {
+    collectionNamesList.innerHTML = '';
+    return;
+  }
+
+  collectionNamesList.innerHTML = '';
+
+  const filtered = collectionData
+    .filter(r => {
+      const matchSearch =
+        r.name.toLowerCase().includes(filter.toLowerCase());
+
+      if (!matchSearch) return false;
+
+      if (currentCollectionTab === 'Total') return true;
+
+      return getMonthBucket(r) === currentCollectionTab;
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  if (!filtered.length) {
+    collectionNamesList.innerHTML =
+      '<p class="empty-state">No records in this category</p>';
+    return;
+  }
+
+  filtered.forEach(record => {
+  const div = document.createElement('div');
+  div.className = 'promise';
+  div.style.display = 'flex';
+  div.style.justifyContent = 'space-between';
+  div.style.alignItems = 'center';
+  div.style.padding = '5px 10px';
+
+
+  const infoDiv = document.createElement('div');
+  infoDiv.textContent = `${record.name} | Bal: ${record.balance} | Last: ${record.lastPaid}`;
+  infoDiv.style.flex = '1';
+  infoDiv.style.cursor = 'pointer';
+  infoDiv.onclick = () => {
+    collectionName.value = record.name;
+    collectionLastPaid.value = record.lastPaid || '';
+    collectionBalance.value = record.balance ?? 0;
+  };
+
+  const deleteBtn = document.createElement('button');
+  deleteBtn.innerHTML = '❌';
+  deleteBtn.style.width = '32px';
+  deleteBtn.style.height = '32px';
+  deleteBtn.style.minWidth = '32px';
+  deleteBtn.style.minHeight = '32px';
+  deleteBtn.style.maxWidth = '32px';
+  deleteBtn.style.maxHeight = '32px';
+  deleteBtn.style.padding = '0';
+  deleteBtn.style.marginLeft = '10px';
+  deleteBtn.style.fontSize = '18px';
+  deleteBtn.style.display = 'flex';
+  deleteBtn.style.justifyContent = 'center';
+  deleteBtn.style.alignItems = 'center';
+  deleteBtn.style.cursor = 'pointer';
+
+  deleteBtn.onclick = e => {
+    e.stopPropagation(); 
+    showConfirm(`Are you sure you want to delete "${record.name}"?`, () => {
+      collectionData = collectionData.filter(r => r.name !== record.name);
+      localStorage.setItem('collectionData', JSON.stringify(collectionData));
+      renderCollectionNames(collectionSearch.value); 
+    });
+  };
+
+  div.appendChild(infoDiv);
+  div.appendChild(deleteBtn);
+  collectionNamesList.appendChild(div);
 });
+
+}
+
+function buildCollectionCopyText() {
+  if (!currentCollectionTab) return null;
+
+  const title = COLLECTION_TAB_TITLES[currentCollectionTab];
+  if (!title) return null;
+
+  const records = collectionData
+    .filter(r => {
+      if (currentCollectionTab === 'Total') return true;
+      return getMonthBucket(r) === currentCollectionTab;
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  if (!records.length) return null;
+
+  let text = `These are your ${title}:\n\n`;
+
+  records.forEach((r, i) => {
+    text += `${i + 1}. ${r.name} | Bal: ${r.balance} | Last: ${r.lastPaid}\n`;
+  });
+
+  return text.trim();
+}
+
+copyCollectionBtn.onclick = async () => {
+  const text = buildCollectionCopyText();
+
+  if (!text) {
+    showNotification(
+      'Please select the tab you want to copy:\n\n' +
+      '3NM, 6NM, 9NM, 12NM\n\n' +
+      'Tap or select the tab, then click Copy.'
+    );
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    showNotification('Copied to clipboard successfully ✅');
+  } catch {
+    showNotification('Failed to copy. Please try again.');
+  }
+};
+
+
+
+function updateCollectionPercentage(month) {
+  const data = quotaData[month];
+
+  if (!data || !data.quota || data.quota <= 0) {
+    collectionPercent.textContent = '0%';
+    return;
+  }
+
+  const percent = Math.min(
+    100,
+    Math.round((data.running / data.quota) * 100)
+  );
+
+  collectionPercent.textContent = percent + '%';
+}
+
+function restoreCollectionUI() {
+  const today = new Date().toISOString().split('T')[0];
+  collectionDate.value = today;
+
+  const month = collectionMonth.value;
+
+  if (quotaData[month]) {
+    collectionQuota.value = quotaData[month].quota ?? 0;
+    collectionTotalBalance.value = quotaData[month].balance ?? 0;
+    collectionRunning.value = quotaData[month].running ?? 0;
+  } else {
+    collectionQuota.value = '';
+    collectionTotalBalance.value = '';
+    collectionRunning.value = '';
+  }
+  updateCollectionPercentage(month);
+
+}
+
+collectionMonth.onchange = restoreCollectionUI;
+
+collectionSearch.oninput = () => renderCollectionNames(collectionSearch.value);
+
+collectionTabs.forEach(tab => {
+  tab.onclick = () => {
+    collectionTabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+
+    currentCollectionTab = tab.dataset.tab;
+
+    collectionNamesVisible = true;
+    renderCollectionNames();
+  };
+});
+
+function updateTabCounts() {
+  const counts = { '3NM':0,'6NM':0,'9NM':0,'12NM':0,'Moving':0,'Total':0 };
+  const now = new Date();
+
+  collectionData.forEach(r => {
+    const last = new Date(r.lastPaid);
+    const months = (now.getFullYear() - last.getFullYear())*12 + (now.getMonth()-last.getMonth());
+
+    if (months >= 12) counts['12NM']++;
+    else if (months >= 9) counts['9NM']++;
+    else if (months >= 6) counts['6NM']++;
+    else if (months >= 3) counts['3NM']++;
+    else counts['Moving']++;
+  });
+
+  counts['Total'] = collectionData.length;
+
+  document.getElementById('count3NM').textContent = counts['3NM'];
+  document.getElementById('count6NM').textContent = counts['6NM'];
+  document.getElementById('count9NM').textContent = counts['9NM'];
+  document.getElementById('count12NM').textContent = counts['12NM'];
+  document.getElementById('countMoving').textContent = counts['Moving'];
+  document.getElementById('countTotal').textContent = counts['Total'];
+}
+
+function getMonthBucket(record) {
+  if (!record.lastPaid) return 'Moving';
+
+  const now = new Date();
+  const last = new Date(record.lastPaid);
+
+  const months =
+    (now.getFullYear() - last.getFullYear()) * 12 +
+    (now.getMonth() - last.getMonth());
+
+  if (months >= 12) return '12NM';
+  if (months >= 9)  return '9NM';
+  if (months >= 6)  return '6NM';
+  if (months >= 3)  return '3NM';
+  return 'Moving';
+}
+
+collectionNamesVisible = false;
+renderCollectionNames();
+restoreCollectionUI();
+
+
+});
+document.addEventListener('DOMContentLoaded', () => {
+  const expandBtn = document.getElementById('expandPanelBtn');
+  const panel = document.getElementById('panelContent');
+
+  expandBtn.addEventListener('click', () => {
+    panel.classList.toggle('hidden');
+    expandBtn.textContent = panel.classList.contains('hidden') ? '>' : '<';
+  });
+});
+
