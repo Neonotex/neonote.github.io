@@ -1439,7 +1439,12 @@ function buildCollectionCopyText() {
   let text = `These are your ${title}:\n\n`;
 
   records.forEach((r, i) => {
-    text += `${i + 1}. ${r.name} | Bal: ${r.balance} | Last: ${r.lastPaid}\n`;
+    text +=
+`${i + 1}. ${r.name}
+   Bal: ${r.balance}
+   Last: ${r.lastPaid}
+
+`;
   });
 
   return text.trim();
