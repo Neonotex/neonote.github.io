@@ -1232,6 +1232,8 @@ const collectionDate = document.getElementById('collectionDate');
 const collectionLastPaid = document.getElementById('collectionLastPaid');
 const collectionPayment = document.getElementById('collectionPayment');
 const addCollectionPayment = document.getElementById('addCollectionPayment');
+const updateCollectionRecord = document.getElementById('updateCollectionRecord');
+
 
 const collectionMonth = document.getElementById('collectionMonth');
 const collectionQuota = document.getElementById('collectionQuota');
@@ -1247,6 +1249,41 @@ const collectionTabs = document.querySelectorAll('.collection-tab');
 let collectionData = JSON.parse(localStorage.getItem('collectionData') || '[]');
 let currentCollectionTab = '3NM';
 let quotaData = JSON.parse(localStorage.getItem('collectionQuotaData') || '{}');
+let monthlyAccountCounts =
+  JSON.parse(localStorage.getItem('monthlyAccountCounts') || '{}');
+
+function getMonthKey(dateStr) {
+  const d = new Date(dateStr);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
+function registerAccountCount(name, date) {
+  const monthKey = getMonthKey(date);
+
+  if (!monthlyAccountCounts[monthKey]) {
+    monthlyAccountCounts[monthKey] = {
+      Total: 0,
+      entries: {} 
+    };
+  }
+
+  if (!monthlyAccountCounts[monthKey].entries[date]) {
+    monthlyAccountCounts[monthKey].entries[date] = [];
+  }
+
+  const dayEntries = monthlyAccountCounts[monthKey].entries[date];
+
+  if (dayEntries.includes(name)) return;
+  dayEntries.push(name);
+  monthlyAccountCounts[monthKey].Total++;
+
+  localStorage.setItem(
+    'monthlyAccountCounts',
+    JSON.stringify(monthlyAccountCounts)
+  );
+}
+
+
 const COLLECTION_TAB_TITLES = {
   '3NM': '3 Months Non-moving Accs',
   '6NM': '6 Months Non-moving Accs',
@@ -1291,6 +1328,46 @@ saveCollectionQuota.onclick = () => {
   updateCollectionPercentage(month);
 };
 
+updateCollectionRecord.onclick = () => {
+  const name = collectionName.value.trim();
+  const balance = Number(collectionBalance.value || 0);
+  const date = collectionDate.value;
+
+  if (!name || !date || isNaN(balance)) return;
+
+  let record = collectionData.find(r => r.name === name);
+
+  if (!record) {
+    record = {
+      name,
+      lastPaid: date,
+      balance: balance,
+      payments: [] 
+    };
+    collectionData.push(record);
+  } else {
+
+    record.lastPaid = date;
+    record.balance = balance;
+  }
+
+  localStorage.setItem('collectionData', JSON.stringify(collectionData));
+
+  collectionNamesVisible = false;
+  updateTabCounts();
+  collectionNamesList.innerHTML = '';
+
+  collectionName.value = '';
+  collectionBalance.value = '';
+  collectionLastPaid.value = '';
+  const today = new Date().toISOString().split('T')[0];
+  collectionDate.value = today;
+
+  collectionName.focus();
+
+  showNotification('Record updated successfully ✅');
+};
+
 addCollectionPayment.onclick = () => {
   const name = collectionName.value.trim();
   const balance = Number(collectionBalance.value || 0);
@@ -1314,6 +1391,8 @@ if (!record) {
   record.lastPaid = date;
   record.payments.push({ amount: payment, date });
   record.balance -= payment;
+  registerAccountCount(name, date);
+
 if (record.balance < 0) record.balance = 0;
 
   const month = collectionMonth.value;
@@ -1326,6 +1405,16 @@ if (record.balance < 0) record.balance = 0;
   localStorage.setItem('collectionQuotaData', JSON.stringify(quotaData));
   collectionTotalBalance.value = quotaData[month]?.balance || 0;
   collectionRunning.value = quotaData[month]?.running || 0;
+  const monthKey = month;
+const monthData = monthlyAccountCounts[monthKey];
+
+const totalAccInput = document.getElementById('collectionTotalAcc');
+if (monthData) {
+  totalAccInput.value = monthData.Total;
+} else {
+  totalAccInput.value = 0;
+}
+
   updateCollectionPercentage(month);
 
     collectionNamesVisible = false;
@@ -1503,6 +1592,15 @@ function restoreCollectionUI() {
     collectionTotalBalance.value = '';
     collectionRunning.value = '';
   }
+  
+  const monthData = monthlyAccountCounts[month];
+  const totalAccInput = document.getElementById('collectionTotalAcc');
+  if (monthData) {
+    totalAccInput.value = monthData.Total ?? 0;
+  } else {
+    totalAccInput.value = 0;
+  }
+  
   updateCollectionPercentage(month);
 
 }
