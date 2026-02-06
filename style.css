@@ -1062,8 +1062,7 @@ button.collectionbtn {
   align-items: flex-start;
   padding: 2px;       
   border-bottom: 2px solid var(--green);
-  background: #000;
-  padding-bottom: 5px;
+  
 }
 
 .collection-title {
