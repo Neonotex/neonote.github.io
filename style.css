@@ -119,8 +119,9 @@ body {
 button:active,
 .floating-btn:active,
 .tab:active {
-  transform: scale(1.08);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.6);
 }
+
 button,
 .floating-btn,
 .tab {
@@ -1125,4 +1126,14 @@ button.collectionbtn {
   justify-content: center;
   gap: 2px;
   line-height: 1.1;
+}
+
+.modal button:active,
+.modal .floating-btn:active,
+.modal .tab:active {
+  transform: none !important;
+}
+
+.modal button {
+  touch-action: manipulation;
 }
