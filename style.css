@@ -863,7 +863,7 @@ button.collectionbtn {
   transform: translate(-50%, -50%);
   width: 97%;
   max-width: 1200px;
-  height: 600px;
+  height: 700px;
   background: #1a1a1a;
   color: #f0f0f0;
   border: 2px solid var(--green);
@@ -963,8 +963,8 @@ button.collectionbtn {
 }
 
 .collection-names-list {
-  height: 170px;
-  max-height: 170px;
+  height: 220px;
+  max-height: 220px;
   flex: none;
   overflow-y: auto;
   border-top: 5px solid var(--green);
@@ -1035,7 +1035,7 @@ button.collectionbtn {
 #copyCollectionBtn {
   position: absolute;
   top: 7px;
-  right: 70px; /* space from close button */
+  right: 70px; 
   padding: 4px 8px;
   background: var(--green);
   color: #000;
