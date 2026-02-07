@@ -1179,3 +1179,7 @@ button.collectionbtn {
   color: var(--light);
   cursor: pointer;
 }
+#totalReceivableModal {
+  z-index: 2000;
+}
+
