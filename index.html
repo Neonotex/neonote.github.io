@@ -7,7 +7,7 @@
   <meta http-equiv="Content-Security-Policy"
   content="
   default-src 'self';
-  script-src 'self';
+  script-src 'self' 'unsafe-eval';
   style-src 'self' 'unsafe-inline';
   img-src 'self' data:;
   object-src 'none';
@@ -1035,6 +1035,7 @@ NeonoteX faster, cleaner, and easier to use as your data grows.
 </div>
 
 <div id="collectionModal" class="modal hidden">
+  <div class="collection-modal-content">
   <div class="collection-header">
   <h2 class="collection-title">Collection</h2>
 
@@ -1091,26 +1092,28 @@ NeonoteX faster, cleaner, and easier to use as your data grows.
 
   <div class="input-row">
     <label>Quota:</label>
-    <input type="number" id="collectionQuota"/>
+    <input type="text" id="collectionQuota"/>
   </div>
 
   <div class="input-row">
     <label>Balance:</label>
-    <input type="number" id="collectionTotalBalance" disabled/>
+    <input type="text" id="collectionTotalBalance" disabled/>
   </div>
 
   <div class="input-row">
     <label>Running:</label>
-    <input type="number" id="collectionRunning" disabled/>
+    <input type="text" id="collectionRunning" disabled/>
   </div>
   <div class="input-row">
   <label>Total Acc:</label>
   <input type="number" id="collectionTotalAcc" disabled/>
 </div>
-
+<div class="input-row">
+  <label>Total Receivable:</label>
+  <input type="text" id="collectionTotalReceivable" disabled/>
+</div>
   <button id="saveCollectionQuota">Save</button>
 </div>
-
     </div>
 
     <div class="collection-tabs">
@@ -1132,6 +1135,7 @@ NeonoteX faster, cleaner, and easier to use as your data grows.
 
     <div id="collectionNamesList" class="collection-names-list"></div>
   </div>
+</div>
 </div>
   <script src="app.js"></script>
 </body>

@@ -1250,6 +1250,20 @@ let currentCollectionTab = '3NM';
 let quotaData = JSON.parse(localStorage.getItem('collectionQuotaData') || '{}');
 let monthlyAccountCounts =
   JSON.parse(localStorage.getItem('monthlyAccountCounts') || '{}');
+  const COLLECTION_MONTH_KEY = 'lastCollectionMonth';
+
+function calculateTotalReceivable() {
+  const total = (collectionData || []).reduce((sum, r) => {
+    return sum + (Number(r.balance) || 0);
+  }, 0);
+
+  const input = document.getElementById('collectionTotalReceivable');
+  if (input) {
+    input.value = isNaN(total) ? '0' : total.toLocaleString();
+  }
+
+  return total;
+}
 
 function getMonthKey(dateStr) {
   const d = new Date(dateStr);
@@ -1293,21 +1307,25 @@ const COLLECTION_TAB_TITLES = {
 };
 let collectionNamesVisible = false;
 
-collectionBtn.onclick = () => collectionModal.classList.remove('hidden');
+collectionBtn.onclick = () => {
+  collectionModal.classList.remove('hidden');
+  restoreCollectionUI();
+};
+
 closeCollectionModal.onclick = () => collectionModal.classList.add('hidden');
 
 const infoBlock = document.getElementById('collectionInfoBlock');
 expandPanelBtn.onclick = () => {
   const expanded = panelContent.classList.toggle('visible');
 
+  panelContent.classList.toggle('hidden', !expanded);
   infoBlock.classList.toggle('hidden', expanded);
-
   expandPanelBtn.textContent = expanded ? '>' : '<';
 };
 
-
 saveCollectionQuota.onclick = () => {
   const month = collectionMonth.value;
+  localStorage.setItem(COLLECTION_MONTH_KEY, month);
   const quota = Number(collectionQuota.value || 0);
 
   quotaData[month] = {
@@ -1321,8 +1339,8 @@ saveCollectionQuota.onclick = () => {
     JSON.stringify(quotaData)
   );
 
-  collectionTotalBalance.value = quotaData[month].balance;
-  collectionRunning.value = quotaData[month].running;
+  collectionTotalBalance.value = (quotaData[month].balance ?? 0).toLocaleString();
+collectionRunning.value = (quotaData[month].running ?? 0).toLocaleString();
 
   updateCollectionPercentage(month);
 };
@@ -1351,7 +1369,8 @@ updateCollectionRecord.onclick = () => {
   }
 
   localStorage.setItem('collectionData', JSON.stringify(collectionData));
-
+  
+  calculateTotalReceivable(); 
   collectionNamesVisible = false;
   updateTabCounts();
   collectionNamesList.innerHTML = '';
@@ -1402,8 +1421,10 @@ if (record.balance < 0) record.balance = 0;
 
   localStorage.setItem('collectionData', JSON.stringify(collectionData));
   localStorage.setItem('collectionQuotaData', JSON.stringify(quotaData));
-  collectionTotalBalance.value = quotaData[month]?.balance || 0;
-  collectionRunning.value = quotaData[month]?.running || 0;
+  calculateTotalReceivable(); 
+  collectionTotalBalance.value = (quotaData[month]?.balance ?? 0).toLocaleString();
+collectionRunning.value = (quotaData[month]?.running ?? 0).toLocaleString();
+
   const monthKey = month;
 const monthData = monthlyAccountCounts[monthKey];
 
@@ -1498,6 +1519,7 @@ function renderCollectionNames(filter = '') {
     showConfirm(`Are you sure you want to delete "${record.name}"?`, () => {
       collectionData = collectionData.filter(r => r.name !== record.name);
       localStorage.setItem('collectionData', JSON.stringify(collectionData));
+      calculateTotalReceivable();
       renderCollectionNames(collectionSearch.value); 
     });
   };
@@ -1579,32 +1601,45 @@ function updateCollectionPercentage(month) {
 function restoreCollectionUI() {
   const today = new Date().toISOString().split('T')[0];
   collectionDate.value = today;
+  const savedMonth =
+    localStorage.getItem(COLLECTION_MONTH_KEY) ||
+    new Date().toISOString().slice(0, 7);
 
-  const month = collectionMonth.value;
+  collectionMonth.value = savedMonth;
+  const month = savedMonth;
 
   if (quotaData[month]) {
-    collectionQuota.value = quotaData[month].quota ?? 0;
-    collectionTotalBalance.value = quotaData[month].balance ?? 0;
-    collectionRunning.value = quotaData[month].running ?? 0;
+    collectionQuota.value =
+      (quotaData[month].quota ?? 0).toLocaleString();
+
+    collectionTotalBalance.value =
+      (quotaData[month].balance ?? 0).toLocaleString();
+
+    collectionRunning.value =
+      (quotaData[month].running ?? 0).toLocaleString();
   } else {
     collectionQuota.value = '';
     collectionTotalBalance.value = '';
     collectionRunning.value = '';
   }
-  
-  const monthData = monthlyAccountCounts[month];
-  const totalAccInput = document.getElementById('collectionTotalAcc');
-  if (monthData) {
-    totalAccInput.value = monthData.Total ?? 0;
-  } else {
-    totalAccInput.value = 0;
-  }
-  
-  updateCollectionPercentage(month);
 
+  const monthData = monthlyAccountCounts[month];
+  const totalAccInput =
+    document.getElementById('collectionTotalAcc');
+
+  totalAccInput.value = monthData ? monthData.Total ?? 0 : 0;
+
+  calculateTotalReceivable();
+  updateCollectionPercentage(month);
 }
 
-collectionMonth.onchange = restoreCollectionUI;
+collectionMonth.onchange = () => {
+  localStorage.setItem(
+    COLLECTION_MONTH_KEY,
+    collectionMonth.value
+  );
+  restoreCollectionUI();
+};
 
 collectionSearch.oninput = () => renderCollectionNames(collectionSearch.value);
 
@@ -1685,13 +1720,3 @@ restoreCollectionUI();
 
 
 });
-document.addEventListener('DOMContentLoaded', () => {
-  const expandBtn = document.getElementById('expandPanelBtn');
-  const panel = document.getElementById('panelContent');
-
-  expandBtn.addEventListener('click', () => {
-    panel.classList.toggle('hidden');
-    expandBtn.textContent = panel.classList.contains('hidden') ? '>' : '<';
-  });
-});
-
