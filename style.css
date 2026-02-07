@@ -1164,3 +1164,18 @@ button.collectionbtn {
 #collectionModal #collectionLastPaid {
   border-color: var(--green);
 }
+
+#getTotalReceivableBtn {
+  border: 2px solid #777;
+  background: transparent;
+  color: #777;
+  cursor: not-allowed;
+  transition: all 0.2s ease;
+}
+
+#getTotalReceivableBtn.enabled {
+  background: var(--bg);
+  border-color: var(--green);
+  color: var(--light);
+  cursor: pointer;
+}
