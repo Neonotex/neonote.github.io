@@ -1156,30 +1156,3 @@ button.collectionbtn {
 #saveCollectionQuota:active {
   transform: scale(1.08);
 }
-
-#collectionModal #collectionTotalBalance,
-#collectionModal #collectionRunning,
-#collectionModal #collectionTotalAcc,
-#collectionModal #collectionTotalReceivable,
-#collectionModal #collectionLastPaid {
-  border-color: var(--green);
-}
-
-#getTotalReceivableBtn {
-  border: 2px solid #777;
-  background: transparent;
-  color: #777;
-  cursor: not-allowed;
-  transition: all 0.2s ease;
-}
-
-#getTotalReceivableBtn.enabled {
-  background: var(--bg);
-  border-color: var(--green);
-  color: var(--light);
-  cursor: pointer;
-}
-#totalReceivableModal {
-  z-index: 2000;
-}
-
