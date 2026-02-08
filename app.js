@@ -1,53 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
   loadUpdateDetails();
 
-const allowedTabs = ['3nm', '6nm', '9nm', '12nm', 'moving', 'total'];
-
 document.querySelectorAll('.tab').forEach(tab => {
   tab.onclick = () => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t =>
+      t.classList.remove('active')
+    );
 
     tab.classList.add('active');
-    currentTab = tab.dataset.tab.toLowerCase(); 
-    getTotalReceivableBtn.disabled = !allowedTabs.includes(currentTab);
-    if (currentTab === 'account') {
-      renderAccount(currentAccountId);
-    } else {
-      render(promises, currentTab);
-    }
+    currentTab = tab.dataset.tab;
+    render();
   };
 });
-
-getTotalReceivableBtn.onclick = () => {
-  if (!currentTab) return;
-
-  let tabKey = currentTab.toLowerCase();
-  if (tabKey === '3nm') tabKey = '3NM';
-  else if (tabKey === '6nm') tabKey = '6NM';
-  else if (tabKey === '9nm') tabKey = '9NM';
-  else if (tabKey === '12nm') tabKey = '12NM';
-  else if (tabKey === 'moving') tabKey = 'Moving';
-  else if (tabKey === 'total') tabKey = 'Total';
-
-  const records = collectionData.filter(r => {
-    if (tabKey === 'Total') return true;
-    return getMonthBucket(r) === tabKey;
-  });
-
-  const total = records.reduce((sum, r) => sum + (Number(r.balance) || 0), 0);
-
-  totalReceivableTitle.textContent =
-    COLLECTION_TAB_TITLES[tabKey] || 'Total Receivable';
-  totalReceivableValue.textContent = total.toLocaleString();
-
-  totalReceivableModal.classList.remove('hidden');
-};
-
-closeTotalReceivableModal.onclick = () => {
-  totalReceivableModal.classList.add('hidden');
-};
-
-
 const sourceCodeBtn = document.getElementById('sourceCodeBtn');
 
 if (sourceCodeBtn) {
@@ -962,7 +926,6 @@ function showTemporaryAccountTab(accId) {
     tab.classList.add('active');
     currentTab = 'account';
     renderAccount(accId);
-    getTotalReceivableBtn.disabled = false;
   };
 }
 
@@ -1281,21 +1244,6 @@ const collectionHistoryBtn = document.getElementById('collectionHistoryBtn');
 
 const collectionNamesList = document.getElementById('collectionNamesList');
 const collectionTabs = document.querySelectorAll('.collection-tab');
-const getTotalReceivableBtn =
-  document.getElementById('getTotalReceivableBtn');
-
-const totalReceivableModal =
-  document.getElementById('totalReceivableModal');
-
-const totalReceivableTitle =
-  document.getElementById('totalReceivableTitle');
-
-const totalReceivableValue =
-  document.getElementById('totalReceivableValue');
-
-const closeTotalReceivableModal =
-  document.getElementById('closeTotalReceivableModal');
-
 
 let collectionData = JSON.parse(localStorage.getItem('collectionData') || '[]');
 let currentCollectionTab = '3NM';
@@ -1358,7 +1306,6 @@ const COLLECTION_TAB_TITLES = {
   'Total': 'All Accounts'
 };
 let collectionNamesVisible = false;
-getTotalReceivableBtn.disabled = true;
 
 collectionBtn.onclick = () => {
   collectionModal.classList.remove('hidden');
@@ -1698,15 +1645,12 @@ collectionSearch.oninput = () => renderCollectionNames(collectionSearch.value);
 
 collectionTabs.forEach(tab => {
   tab.onclick = () => {
-    document.querySelectorAll('.collection-tab').forEach(t =>
-      t.classList.remove('active')
-    );
-
+    collectionTabs.forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
-    currentCollectionTab = tab.dataset.tab;
-    const allowedTabs = ['3NM', '6NM', '9NM', '12NM', 'Moving', 'Total'];
-    getTotalReceivableBtn.disabled = !allowedTabs.includes(currentCollectionTab);
 
+    currentCollectionTab = tab.dataset.tab;
+
+    collectionNamesVisible = true;
     renderCollectionNames();
   };
 });
@@ -1769,47 +1713,6 @@ function getMonthBucket(record) {
   if (months >= 3)  return '3NM';
   return 'Moving';
 }
-
-function calculateTabTotalReceivable(tab) {
-  return collectionData.reduce((sum, r) => {
-    if (tab === 'Total') {
-      return sum + (Number(r.balance) || 0);
-    }
-
-    return getMonthBucket(r) === tab
-      ? sum + (Number(r.balance) || 0)
-      : sum;
-  }, 0);
-}
-
-getTotalReceivableBtn.onclick = (e) => {
-  e.preventDefault();
-  if (!currentCollectionTab) return;
-
-  const titleMap = {
-    '3NM': '3 Months Non-moving',
-    '6NM': '6 Months Non-moving',
-    '9NM': '9 Months Non-moving',
-    '12NM': '12 Months Non-moving',
-    'Moving': 'Moving Accounts',
-    'Total': 'All Accounts'
-  };
-
-  const total =
-    calculateTabTotalReceivable(currentCollectionTab);
-
-  totalReceivableTitle.textContent =
-    `This is your ${titleMap[currentCollectionTab]} Total Receivable`;
-
-  totalReceivableValue.value =
-    total.toLocaleString();
-
-  totalReceivableModal.classList.remove('hidden');
-};
-
-closeTotalReceivableModal.onclick = () => {
-  totalReceivableModal.classList.add('hidden');
-};
 
 collectionNamesVisible = false;
 renderCollectionNames();
