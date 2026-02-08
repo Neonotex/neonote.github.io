@@ -53,6 +53,93 @@ NeonoteX offers a wide range of features that go beyond simple promise tracking:
 
 ---
 
+# NeonoteX Features – Collection & Notepad
+
+## Collection Management
+
+NeonoteX includes a robust **Collection** module to manage account balances, track payments, and monitor monthly quotas. This module is ideal for businesses or teams that need to track multiple client accounts and ensure timely collections.
+
+### Accessing Collection Module
+- Open the Collection panel by clicking the **Collection** button (`collectionBtn`) in the main interface.
+- Close the panel using the **Close** button (`closeCollectionModal`).
+
+### Tabs & Categories
+Collection records are organized into several tabs based on account activity duration:
+- **3NM**: 3 Months Non-moving Accounts
+- **6NM**: 6 Months Non-moving Accounts
+- **9NM**: 9 Months Non-moving Accounts
+- **12NM**: 12 Months Non-moving Accounts
+- **Moving**: Accounts with active movement
+- **Total**: All accounts combined  
+
+Each tab dynamically filters the displayed accounts according to the category.
+
+### Adding & Updating Collection Records
+- **Add New Record**: Enter client **Name**, **Balance**, **Last Paid Date**, and optional **Payment**.  
+- **Update Record**: Edit the same fields to update an existing client record.  
+- **Automatic Balance Adjustment**: When adding a payment, the balance is automatically reduced, and monthly running totals are updated.
+- **Persistent Storage**: All collection data is stored in `localStorage` (`collectionData` and `collectionQuotaData`).
+
+### Quota & Monthly Tracking
+- **Set Monthly Quota**: Enter the target quota for a selected month.
+- **Track Running Total**: Displays total payments made vs. quota.
+- **Percentage Completion**: Dynamically updates to show the progress toward the monthly quota.
+- **Monthly Account Counts**: Automatically tracks the number of accounts recorded per month.
+
+### Searching & Filtering
+- Use the **Search** input (`collectionSearch`) to filter collection records by client name.
+- Tabs automatically adjust to display only accounts that match the selected category.
+
+### Copy & Balance Tools
+- **Copy Collection**: Copies all visible accounts in the selected tab to clipboard in a structured format.
+- **Balance of Button**: Shows the total receivable balance for the currently selected tab with a notification popup.
+
+### UI Features
+- **Expandable Panel**: Toggle detailed info using the **Expand Panel** button.
+- **Dynamic Account List**: Clicking a client name auto-fills their data for updates.
+- **Delete Records**: Each record can be deleted individually with confirmation.
+
+### Data Keys
+- `collectionData`: Array of all collection records  
+- `collectionQuotaData`: Object storing monthly quotas and balances  
+- `monthlyAccountCounts`: Tracks total accounts added per month  
+
+---
+
+## Notepad Feature
+
+NeonoteX provides a built-in **Notepad** to store notes related to your accounts, projects, or personal tasks.
+
+### Accessing Notepad
+- Open the Notepad panel using the **Notepad** button (`notepadBtn`).
+- Close the panel using the **Close** button (`closeNotepad`).
+
+### Notes Management
+- **Add Note**: Click **Add Note** (`addNoteBtn`) to create a new note with empty title and content.
+- **Select Note**: Click a note in the sidebar list to load it into the editor.
+- **Delete Note**: Delete a note using the ❌ button next to it. Confirmation is required.
+- **Edit Note**: Directly edit the **Title** (`noteTitle`) and **Content** (`noteContent`), with live autosave to `localStorage`.
+- **Character Limit**:
+  - Title: 100 characters  
+  - Content: 20,000 characters  
+
+### Sidebar Features
+- **Toggle Sidebar**: Collapse or expand the note list using the **Toggle Notes** button (`toggleNotes`).
+- **Real-time Update**: Notes list updates automatically whenever a note is added, updated, or deleted.
+
+### Data Storage
+- Notes are stored in `localStorage` under the key `neonote_notes`.  
+- Each note object contains:
+  ```json
+  {
+    "id": "note_123456789",
+    "title": "Note Title",
+    "content": "Note content text..."
+  }
+  
+
+---
+
 ## Use Cases
 
 NeonoteX is designed for debt collectors, Managers, and small businesses, but its flexible features make it useful in many scenarios:
