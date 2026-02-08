@@ -6,6 +6,36 @@
 
 🌐 Official App site: https://neonotex.github.io
 
+---
+
+# What's New in NeonoteX
+
+I am excited to announce the latest update for **NeonoteX**! This release brings new features, bug fixes, and UI improvements to enhance your experience.
+
+## ✨ New Features
+
+### 1. Collection Mode
+- Efficiently manage client accounts and balances.
+- Track monthly quotas and payments.
+- Filter accounts by activity (3NM, 6NM, 9NM, 12NM, Moving, Total).
+- Copy account data or view total balances with a single click.
+
+### 2. Notepad
+- Built-in notepad to store notes, reminders, or important information.
+- Add, edit, and delete notes with autosave functionality.
+- Easily navigate between notes using the sidebar.
+- Supports large content with character limits for titles and notes.
+
+## 🛠 Bug Fixes & Improvements
+- Fixed various UI glitches for a smoother experience.
+- Enhanced responsiveness across devices.
+- Optimized app performance for faster loading and navigation.
+
+---
+
+Thank you for using **NeonoteX**! Stay tuned for more updates and features in upcoming releases.
+
+
 ### NeonoteX 
 is an open-source offline note-taking app designed for efficient task management. Originally built for debt collectors, it allows users to create customized notes, schedule tasks, and track commitments with ease.
 
