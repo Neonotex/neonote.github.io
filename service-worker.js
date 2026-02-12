@@ -1,4 +1,4 @@
-const CACHE = 'neonote-v412';
+const CACHE = 'neonote-v413';
 
 const ASSETS = [
   './',
@@ -12,43 +12,26 @@ const ASSETS = [
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE).then(cache => {
-      return cache.addAll(ASSETS);
-    })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
   );
-  self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
-  event.waitUntil(self.clients.claim());
-});
-
-self.addEventListener('fetch', event => {
-  if (
-    event.request.method !== 'GET' ||
-    !event.request.url.startsWith(self.location.origin)
-  ) {
-    return;
-  }
-
-  event.respondWith(
-    caches.match(event.request).then(cached => {
-      return cached || fetch(event.request);
-    })
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(
+        keys.map(key => key !== CACHE_NAME && caches.delete(key))
+      )
+    )
   );
 });
 
-self.addEventListener('message', event => {
-  if (event.data?.action === 'APPLY_UPDATE') {
-    event.waitUntil(applyLatestUpdate());
-    self.skipWaiting();
-  }
+self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') return;
+
+  event.respondWith(
+    caches.match(event.request).then(response => {
+      return response || new Response('Offline', { status: 503 });
+    })
+  );
 });
-
-async function applyLatestUpdate() {
-  const keys = await caches.keys();
-  await Promise.all(keys.map(k => caches.delete(k)));
-
-  const cache = await caches.open(CACHE);
-  await cache.addAll(ASSETS);
-}
